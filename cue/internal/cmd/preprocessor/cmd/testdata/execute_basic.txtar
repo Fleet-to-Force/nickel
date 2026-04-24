@@ -1,0 +1,98 @@
+# Ensure that preprocessor works in the basic case of copying input in a single
+# language to output
+
+# Run the preprocessor
+exec preprocessor execute --debug=all
+
+# Verify that the target files matche the source contents
+cmp hugo/content/en/branch_md/_index.md golden/hugo/content/en/branch_md/_index.md
+cmp hugo/content/en/leaf_md/index.md golden/hugo/content/en/leaf_md/index.md
+cmp hugo/content/en/branch_html/_index.html golden/hugo/content/en/branch_html/_index.html
+cmp hugo/content/en/leaf_html/index.html golden/hugo/content/en/leaf_html/index.html
+
+# Ensure that the contents of the filesystem are as expected
+exec cmd-find
+cmp stdout stdout.golden
+
+-- hugo/.keep --
+-- content/branch_md/_en.md --
+---
+title: test
+---
+branch_md_en
+-- content/branch_md/site.cue --
+package site
+
+content: branch_md: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/leaf_md/en.md --
+---
+title: test
+---
+leaf_md_en
+-- content/leaf_md/site.cue --
+package site
+
+content: leaf_md: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/branch_html/_en.html --
+---
+title: test
+---
+branch_html_en
+-- content/branch_html/site.cue --
+package site
+
+content: branch_html: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/leaf_html/en.html --
+---
+title: test
+---
+leaf_html_en
+-- content/leaf_html/site.cue --
+package site
+
+content: leaf_html: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- golden/hugo/content/en/branch_md/_index.md --
+---
+title: test
+---
+branch_md_en
+-- golden/hugo/content/en/leaf_md/index.md --
+---
+title: test
+---
+leaf_md_en
+-- golden/hugo/content/en/branch_html/_index.html --
+---
+title: test
+---
+branch_html_en
+-- golden/hugo/content/en/leaf_html/index.html --
+---
+title: test
+---
+leaf_html_en
+-- stdout.golden --
+content/branch_html/_en.html
+content/branch_html/site.cue
+content/branch_md/_en.md
+content/branch_md/site.cue
+content/leaf_html/en.html
+content/leaf_html/site.cue
+content/leaf_md/en.md
+content/leaf_md/site.cue
+hugo/content/en/branch_html/_index.html
+hugo/content/en/branch_md/_index.md
+hugo/content/en/leaf_html/index.html
+hugo/content/en/leaf_md/index.md

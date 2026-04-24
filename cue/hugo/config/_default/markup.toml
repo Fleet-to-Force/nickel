@@ -1,0 +1,35 @@
+# Code generated site_tool.cue; DO NOT EDIT.
+
+defaultMarkdownHandler = 'goldmark'
+
+[goldmark]
+[goldmark.extensions]
+definitionList = true
+footnote = true
+linkify = true
+strikethrough = true
+table = true
+taskList = true
+typographer = true
+
+[goldmark.parser]
+autoHeadingID = true
+autoHeadingIDType = 'github'
+
+[goldmark.parser.attribute]
+block = true
+title = true
+
+[goldmark.renderer]
+hardWraps = false
+unsafe = true
+xhtml = false
+
+[highlight]
+lineNumbersInTable = false
+style = 'trac'
+
+[tableOfContents]
+endLevel = 2
+ordered = false
+startLevel = 2

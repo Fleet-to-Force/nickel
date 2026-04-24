@@ -1,0 +1,57 @@
+{{ $authorsPages := .Site.GetPage "/authors" }}
+{{ $articleAuthors := .Params.Authors | default false }}
+
+<div class="authors">
+    {{ range $authorName := .Params.Authors }}
+        {{ $pagePath := printf "%s/index.md" $authorName }}
+        {{ $authorMatches := $authorsPages.Resources.Match $pagePath }}
+
+        {{ range first 1 $authorMatches }}
+            <details class="authors__item" data-dropdown>
+                <summary class="authors__avatar">
+                    <img class="authors__image" src="https://github.com/{{ $authorName }}.png" alt="{{ $authorName|default .Params.name }}">
+
+                    {{ if .Params.displayName }}
+                        <span class="authors__display-name">{{ .Params.displayName }}</span>
+                    {{ else }}
+                        <span class="authors__author-name">{{ $authorName }}</span>
+                    {{ end }}
+                </summary>
+
+                <div class="authors--popover">
+                    <div class="authors__avatar">
+                        <img class="authors__image" src="https://github.com/{{ $authorName }}.png" alt="{{ $authorName|default .Params.name }}">
+
+                        <div class="authors__name">
+                            {{ if .Params.displayName }}
+                                <span class="authors__display-name">{{ .Params.displayName }}</span>
+                            {{ end }}
+
+                        </div>
+                    </div>
+
+                    <div class="authors__links">
+                        <div class="authors__github">
+
+                            <a class="authors__link" href="https://github.com/{{ $authorName }}">
+                                {{ partial "icon.html" (dict "icon" "github" "class" "authors__icon") }}
+                                <p>
+                                    <span class="authors__link-text">{{ T "author_github" }}</span>
+                                </p>
+                            </a>
+                        </div>
+
+                        <div class="authors__search">
+                            <a class="authors__link" href="/search/?q=author:{{ replace .Name "/index.md" ""  }}">
+                                {{ partial "icon.html" (dict "icon" "search" "class" "authors__icon") }}
+                                <p>
+                                    <span class="authors__link-text">{{ T "author_search" }}</span>
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        {{ end }}
+    {{ end }}
+</div>

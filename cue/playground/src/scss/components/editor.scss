@@ -1,0 +1,17 @@
+@import '../config/colors';
+@import '../config/prefix';
+
+.#{ $prefix }-editor {
+    background: $c-white;
+    height: 100%;
+    max-width: 100vw;
+    padding-top: 1rem;
+
+    .cm-editor {
+        height: 100%;
+    }
+
+    &--terminal {
+        background: $c-output-bcg;
+    }
+}

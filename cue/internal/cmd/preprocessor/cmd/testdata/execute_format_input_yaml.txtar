@@ -1,0 +1,55 @@
+# Ensure that preprocessor correctly reformats input files that are known to
+# it.
+
+unquote content/dir1/en.md
+unquote golden/content/dir1/en.md
+
+# Run the preprocessor
+exec preprocessor execute --debug=all
+
+# Verify that the source file is intact
+cmp content/dir1/en.md golden/content/dir1/en.md
+
+# Verify that the target files matche the source contents
+cmp hugo/content/en/dir1/index.md golden/hugo/content/en/dir1/index.md
+
+-- hugo/.keep --
+-- content/dir1/site.cue --
+package site
+
+content: dir1: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/dir1/en.md --
+>---
+>title: title
+>---
+>{{{with code "en" "json-superset"}}}
+>-- in.yaml --
+>{"x": 5}
+>-- out.yaml --
+>x: 5
+>{{{end}}}
+-- golden/content/dir1/en.md --
+>---
+>title: title
+>---
+>{{{with code "en" "json-superset"}}}
+>-- in.yaml --
+>{"x": 5}
+>-- out.yaml --
+>x: 5
+>{{{end}}}
+-- golden/hugo/content/en/dir1/index.md --
+---
+title: title
+---
+{{< code-tabs >}}
+{{< code-tab name="YAML" language="yaml" area="top-left" >}}
+{"x": 5}
+{{< /code-tab >}}
+{{< code-tab name="YAML" language="yaml" area="top-right" type="terminal" >}}
+x: 5
+{{< /code-tab >}}
+{{< /code-tabs >}}

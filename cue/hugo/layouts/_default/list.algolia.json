@@ -1,0 +1,87 @@
+{{/* Generates a valid Algolia search index */}}
+{{- $section := $.Site.GetPage "section" .Section -}}
+[
+    {{ range $idx, $page := $.Site.Pages -}}
+        {{- if or (and ($page.IsDescendant $section) (and (not $page.Draft) (not $page.Params.no_index) (not (eq $page.Type "examples")))) $page.IsHome -}}
+            {{- if $idx -}},{{- end -}}
+
+            {{- template "algolia-object" (dict
+                "index" 0
+                "page" $page
+            ) -}}
+        {{- end -}}
+    {{- end }}
+]
+
+{{- define "algolia-object" -}}
+    {{ $page := .page -}}
+    {{ $cutoff := 1000 -}}
+    {{ $index := .index -}}
+    {{ $skipWords := mul $cutoff $index }}
+    {{ $fileID := replace $page.Title " " "_"|lower }}
+    {{- with $page.File -}}
+        {{- $fileID = .UniqueID -}}
+    {{- end -}}
+
+    {{- $objectID := (print $fileID "_" (add $index 1)) -}}
+    {{- $title :=  $page.Title -}}
+    {{- $link := $page.RelPermalink -}}
+    {{- $publishDate := $page.PublishDate -}}
+    {{- $summary := $page.Summary | plainify -}}
+    {{- $content := "" -}}
+    {{- $tags := cond (isset $page.Params "tags") ($page.Params.tags) "" -}}
+    {{- $contentType := $page.FirstSection.Title -}}
+    {{- $breadcrumb := slice -}}
+    {{- $authors := cond (isset $page.Params "authors") ($page.Params.authors) "" -}}
+
+    {{/* If section is docs we derive the content type from the first level of nesting within docs*/}}
+    {{- if and (eq $page.Section "docs") (ne $page $page.FirstSection) -}}
+        {{ $parent := $page.Parent -}}
+
+        {{/* Go up tree to find first level parent which is not /docs itself */}}
+        {{- if and $parent (ne $parent $page.FirstSection) -}}
+            {{ $contentType = $parent.Title }}
+            {{ $parent = $parent.Parent -}}
+            {{- if and $parent (ne $parent $page.FirstSection) -}}
+                {{ $contentType = $parent.Title }}
+            {{- end -}}
+        {{- else -}}
+            {{/* If no parent we're already at top level so current page is the content type */}}
+            {{ $contentType = $page.Title }}
+        {{- end -}}
+    {{- end -}}
+
+    {{- if ne $page $page.FirstSection -}}
+        {{- range $index, $parent := $page.Ancestors.Reverse -}}
+            {{- if eq .IsHome false -}}
+                {{- $breadcrumb = $breadcrumb | append $parent.Title -}}
+            {{ end }}
+        {{- end -}}
+    {{- end -}}
+
+    {{- if eq $index 0 -}}
+        {{- $content = delimit (first $cutoff $page.PlainWords) " " -}}
+    {{- else -}}
+        {{- $content = delimit (first $cutoff (after $skipWords $page.PlainWords)) " " -}}
+    {{- end -}}
+
+    {
+        "objectID": {{ $objectID | jsonify }},
+        "title": {{ $title | jsonify }},
+        "link": {{ $link | jsonify }},
+        "publishDate": {{ $publishDate | jsonify }},
+        "summary": {{ $summary | jsonify }},
+        "content": {{ $content  | jsonify}},
+        "breadcrumb": {{ $breadcrumb | jsonify }},
+        "contentType": {{ $contentType | jsonify }},
+        "tags": {{ $tags | jsonify }},
+        "authors": {{ $authors | jsonify }}
+    }
+
+    {{- if gt $page.PlainWords (add $cutoff $skipWords) -}},
+        {{- template "algolia-object" (dict
+            "index" (add $index 1)
+            "page" $page
+        ) -}}
+    {{- end -}}
+{{- end -}}

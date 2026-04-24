@@ -1,0 +1,18 @@
+{{ define "main" }}
+    {{ partial "paging/back-button.html" . }}
+
+    <article class="article" itemscope itemtype="https://schema.org/Article">
+        {{ partial "schema/article.html" . }}
+
+        <div class="article__container">
+            {{- partial "article--header" (dict "showTitle" true "context" .) -}}
+
+            <div class="article__content">
+                {{- .Content -}}
+            </div>
+            {{- partial "article--footer" . -}}
+        </div>
+    </article>
+
+    {{ partial "paging/prev-next.html" . }}
+{{ end }}

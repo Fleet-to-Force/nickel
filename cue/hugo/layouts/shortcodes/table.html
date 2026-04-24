@@ -1,0 +1,35 @@
+{{- $file := .Get "file" | default "" -}}
+{{- $dataFile := index .Site.Data $file -}}
+{{- $theme := .Get "theme" | default "" -}}
+
+<div class="table{{ with $theme }} table--{{ . }}{{ end }}">
+    {{- if $dataFile -}}
+        {{- template "data-table" (dict "file" $dataFile) -}}
+    {{- else -}}
+        {{- .Inner | $.Page.RenderString -}}
+    {{- end -}}
+</div>
+
+{{- define "data-table" -}}
+    {{- $data := .file -}}
+    {{- $count := 0 }}
+
+    <table>
+        {{ range $table := $data }}
+            {{ range $row := $table }}
+                <tr>
+                    {{ range $datas := $row }}
+                        {{ range $data := $datas }}
+                            {{ if eq 0 $count }}
+                                <th>{{ . }}</th>
+                            {{ else }}
+                                <td>{{ . }}</td>
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                </tr>
+                {{- $count = add $count 1 }}
+            {{ end }}
+        {{ end }}
+    </table>
+{{- end -}}

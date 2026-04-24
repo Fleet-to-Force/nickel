@@ -1,0 +1,6 @@
+{{- with .Inner -}}{{/* don't do anything, just call it because hugo needs it */}}{{ end }}
+{{- $groupId := .Get "groupId" | default "default" -}}
+{{- $tabs := .Scratch.Get "tabs" -}}
+
+{{ partial "tabs.html" (dict "groupId" $groupId "tabs" $tabs) }}
+

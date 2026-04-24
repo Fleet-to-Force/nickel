@@ -1,0 +1,5 @@
+@mixin object-fit($value: cover) {
+    height: 100%;
+    object-fit: $value;
+    width: 100%;
+}

@@ -1,0 +1,28 @@
+{{- define "breadcrumb-items" -}}
+    {{ if .page.Parent -}}
+        {{ if not .page.Parent.IsHome -}}
+            {{ template "breadcrumb-items" (dict "page" .page.Parent "current" .current) -}}
+        {{ end -}}
+    {{ else if not .page.IsHome -}}
+        {{ template "breadcrumb-items" (dict "page" .page.Site.Home "current" .current) -}}
+    {{ end -}}
+
+    {{ $isAncester := eq .page .page.FirstSection }}
+    {{ $isCurrentPage := eq .current .page }}
+
+    {{ if not $isAncester }}
+        <li class="breadcrumb__item"{{- if $isCurrentPage }} aria-current="page"{{ end }}>
+            {{- if not $isCurrentPage -}}
+                <a class="breadcrumb__link" href="{{ .page.Permalink }}">{{ .page.LinkTitle }}</a>
+            {{- else if $isCurrentPage -}}
+                <h1 class="breadcrumb__text">{{ .page.LinkTitle }}</h1>
+            {{- end -}}
+        </li>
+    {{ end }}
+{{- end -}}
+
+<nav class="breadcrumb" aria-label="breadcrumb">
+    <ol class="breadcrumb__list">
+        {{- template "breadcrumb-items" (dict "page" . "current" .) }}
+    </ol>
+</nav>

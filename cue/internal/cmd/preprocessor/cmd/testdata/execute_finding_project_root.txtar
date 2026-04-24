@@ -1,0 +1,18 @@
+# Ensure that preprocessor finds the project root in various situations
+
+# Empty target hugo directory
+cd empty_target
+mkdir hugo # because we can't define an empty directory in txtar
+exec preprocessor execute --debug=all
+
+-- empty_target/content/branch_md/_en.md --
+---
+---
+branch_md_en
+-- empty_target/content/branch_md/root.cue --
+package site
+
+content: branch_md: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}

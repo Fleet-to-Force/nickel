@@ -1,0 +1,192 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../config/typography';
+@import '../mixins/sr-only';
+@import '../mixins/screen';
+@import '../mixins/typography';
+
+.searchbar {
+    $self: &;
+
+    --aa-text-color-rgb: $c-grey--darkest;
+    --aa-primary-color-rgb: $c-blue;
+    --aa-selected-color-rgb: $c-blue--lighter;
+
+    &__form {
+        background-color: $c-white;
+        border: none;
+        border-radius: 50px;
+        height: $h-button--small + 16px;
+        padding: 0 1.125rem 0 2.75rem;
+        position: relative;
+
+        &:focus-within {
+            // stylelint-disable-next-line color-function-notation
+            box-shadow: inset rgba(var(--aa-primary-color-rgb), var(--aa-primary-color-alpha)) 0 0 0 2px;
+        }
+
+        &--detached {
+            padding: 0 1.125rem 0 0.5rem;
+        }
+    }
+
+    &__prefix {
+        left: 10px;
+        position: absolute;
+    }
+
+    &__suffix {
+        position: absolute;
+        right: 4px;
+    }
+
+    &__input {
+        &[type='search'] {
+            border: none;
+        }
+
+        // To override browser styling for autofill (-internal-autofill-selected)
+        /* stylelint-disable property-no-vendor-prefix */
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 40rem #ffff inset;
+        }
+        /* stylelint-enable property-no-vendor-prefix */
+    }
+
+    &__label {
+        height: $h-button--small;
+    }
+
+    &__button {
+        align-items: center;
+        background-color: $c-yellow;
+        display: flex;
+        height: $h-button--small;
+        justify-content: center;
+        padding: 5px;
+        width: $h-button--small;
+
+        &:hover,
+        &:focus {
+            background-color: $c-blue--darker;
+            border: 2px solid var(--button-color);
+        }
+    }
+
+    &__form-container {
+        background-color: $c-yellow;
+        border-bottom: none;
+    }
+
+    &__item {
+        padding-bottom: 10px;
+        padding-top: 10px;
+        text-decoration: none;
+    }
+
+    &__breadcrumb {
+        @include style-text-small;
+
+        color: var(--searchbar-breadcrumb-color, $c-blue--darker);
+
+        span {
+            &::after {
+                content: ' / ';
+            }
+        }
+    }
+
+    &__item-title {
+        @include style-heading-4;
+
+        color: var(--searchbar-title-color, $c-blue--light);
+        margin: 0.25rem 0;
+    }
+
+    &__item-description {
+        @include style-text-small;
+
+        color: var(--searchbar-description-color, $c-grey-blue--dark);
+        line-height: 1.75;
+        margin: 0;
+
+        &:empty {
+            margin: 0;
+        }
+    }
+
+    &__results {
+        @include style-text-small;
+
+        font-weight: $weight-medium;
+
+        &.is-hidden {
+            display: none;
+        }
+    }
+
+    &__logo {
+        float: right;
+        height: 28px;
+        margin: -28px 0 0.2rem auto;
+        width: 120px;
+    }
+
+    &__header-title {
+        color: $c-pink;
+        padding-left: 4px;
+    }
+
+    &__header-line {
+        border-bottom: 1px solid $c-pink;
+    }
+
+    @include screen($screen-simple) {
+        &__logo {
+            margin: -42px $p-gutter 1rem auto;
+        }
+    }
+
+    @include screen($screen-normal) {
+        &__form {
+            height: $h-button + 16px;
+            padding: 0 2.25rem 0 3.5rem;
+        }
+
+        &__label {
+            height: $h-button;
+        }
+
+        &__button {
+            height: $h-button;
+            padding: 10px;
+            width: $h-button;
+        }
+
+        &__panel {
+            z-index: 2;
+        }
+
+        &--small {
+            #{ $self }__form {
+                height: $h-button--small + 16px;
+                padding: 0 1.125rem 0 2.75rem;
+            }
+
+            #{ $self }__label {
+                height: $h-button--small;
+            }
+
+            #{ $self }__button {
+                align-items: center;
+                display: flex;
+                height: $h-button--small;
+                justify-content: center;
+                padding: 7px;
+                width: $h-button--small;
+            }
+        }
+    }
+}

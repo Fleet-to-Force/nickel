@@ -1,0 +1,51 @@
+// SCREENSIZES
+$screen-xsmall:                 340px;
+$screen-minimal:                480px;
+$screen-simple:                 768px;
+$screen-normal:                 1024px;
+$screen-large:                  1280px;
+$screen-xlarge:                 1440px;
+$screen-huge:                   1680px;
+$screen-jumbo:                  1920px;
+
+// SITE
+$w-site:                        1380px;
+$w-container:                   $w-site;
+$w-content:                     940px;
+$w-content--small:              840px;
+$w-drawer:                      400px;
+$p-gutter:                      20px;
+$p-gutter--large:               40px;
+
+// HEADER
+$h-header:                      90px;
+$h-header--large:               120px;
+$h-header--xlarge:              180px;
+$h-header--sticky:              70px;
+
+// BRANDING
+$w-branding:                    75px;
+$w-branding--large:             90px;
+$w-branding--xlarge:            140px;
+
+// SECTION
+$w-section-container:           $w-site;
+$w-section-content:             $w-content;
+
+// BUTTONS & FORMS
+$h-button:                      46px;
+$h-button--small:               32px;
+$h-field:                       46px;
+
+// BORDERS
+$b-radius:                      3px;
+$b-radius--large:               6px;
+$b-radius--xlarge:              10px;
+$b-radius--round:               50%;
+
+// SPACING
+$sp-xs: 1rem;
+$sp-sm: 1.5rem;
+$sp-md: 2rem;
+$sp-lg: 3rem;
+$sp-xl: 4rem;

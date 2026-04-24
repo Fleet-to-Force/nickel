@@ -1,0 +1,70 @@
+@import '../config/sizes';
+@import '../mixins/screen';
+@import '../mixins/typography';
+
+.banner {
+    display: flex;
+    flex-direction: column-reverse;
+
+    &__content {
+        text-align: center;
+    }
+
+    &__title {
+        @include style-heading-banner;
+
+        margin: 0;
+    }
+
+    &__intro {
+        margin-bottom: 0;
+    }
+
+    &__image {
+        margin: 0 auto;
+        max-width: 400px;
+        padding: 0 $p-gutter;
+    }
+
+    @include screen($screen-simple) {
+        flex-direction: row;
+        gap: $p-gutter--large;
+        justify-content: space-between;
+
+        &__content {
+            align-items: flex-start;
+            display: flex;
+            flex: 0 1 40%;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        &__intro {
+            font-size: 1.25rem;
+            max-width: 70%;
+        }
+
+        &__image {
+            flex: 0 1 60%;
+            margin: 0;
+            padding: 0 0 0 $p-gutter--large;
+        }
+    }
+
+    @include screen($screen-normal) {
+        gap: 60px;
+
+        &__image {
+            padding: 0;
+            transform: translateX(2rem);
+        }
+    }
+
+    @include screen($screen-large) {
+        &__image {
+            transform: translateX(3rem);
+        }
+    }
+}

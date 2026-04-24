@@ -1,0 +1,89 @@
+# Ensure that we create uploaded files in the right place,
+# regardless of working directory at the time of the upload.
+
+unquote content/dir/en.md
+
+exec preprocessor execute
+
+cmp hugo/content/en/dir/index.md golden/hugo/content/en/dir/index.md
+
+-- hugo/.keep --
+-- content/site.cue --
+package site
+-- content/dir/page.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>{{{with script "en" "1"}}}
+>find $HOME -type f | sort
+>{{{end}}}
+>
+>{{{with upload "en" "2"}}}
+>-- one.txt --
+>{{{end}}}
+>{{{with upload "en" "3"}}}
+>-- another/two.txt --
+>{{{end}}}
+>
+>{{{with script "en" "4"}}}
+>find $HOME -type f | sort
+>cd another
+>{{{end}}}
+>
+>{{{with upload "en" "5"}}}
+>-- three.txt --
+>{{{end}}}
+>{{{with upload "en" "6"}}}
+>-- another/four.txt --
+>{{{end}}}
+>
+>{{{with script "en" "7"}}}
+>find $HOME -type f | sort
+>{{{end}}}
+>
+-- golden/hugo/content/en/dir/index.md --
+---
+title: JSON Superset
+---
+
+````text { title="TERMINAL" type="terminal" codeToCopy="ZmluZCAkSE9NRSAtdHlwZSBmIHwgc29ydA==" }
+$ find $HOME -type f | sort
+````
+
+{{< code-tabs >}}
+{{< code-tab name="one.txt" language="txt" area="top-left" >}}
+{{< /code-tab >}}{{< /code-tabs >}}
+{{< code-tabs >}}
+{{< code-tab name="another/two.txt" language="txt" area="top-left" >}}
+{{< /code-tab >}}{{< /code-tabs >}}
+
+````text { title="TERMINAL" type="terminal" codeToCopy="ZmluZCAkSE9NRSAtdHlwZSBmIHwgc29ydApjZCBhbm90aGVy" }
+$ find $HOME -type f | sort
+/home/runner/another/two.txt
+/home/runner/one.txt
+$ cd another
+````
+
+{{< code-tabs >}}
+{{< code-tab name="three.txt" language="txt" area="top-left" >}}
+{{< /code-tab >}}{{< /code-tabs >}}
+{{< code-tabs >}}
+{{< code-tab name="another/four.txt" language="txt" area="top-left" >}}
+{{< /code-tab >}}{{< /code-tabs >}}
+
+````text { title="TERMINAL" type="terminal" codeToCopy="ZmluZCAkSE9NRSAtdHlwZSBmIHwgc29ydA==" }
+$ find $HOME -type f | sort
+/home/runner/another/four.txt
+/home/runner/another/two.txt
+/home/runner/one.txt
+/home/runner/three.txt
+````
+

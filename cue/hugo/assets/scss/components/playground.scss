@@ -1,0 +1,9 @@
+@import '../mixins/center';
+
+.playground {
+    height: 100vh;
+
+    &__spinner {
+        @include center;
+    }
+}

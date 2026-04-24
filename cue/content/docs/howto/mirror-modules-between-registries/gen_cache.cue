@@ -1,0 +1,52 @@
+package site
+{
+	content: {
+		docs: {
+			howto: {
+				"mirror-modules-between-registries": {
+					page: {
+						cache: {
+							multi_step: {
+								hash:       "B6CKBLCNJ748O1JV5JTEERUU65DNDF8HAEAGRB83LNVFCG68EH50===="
+								scriptHash: "37BT6DTJCA8615QVE576M4H53K8E2ND7B9JSB91BS547LKR9TFQ0===="
+								steps: [{
+									doc:      "# Access to Central Registry."
+									cmd:      "mkdir -p $HOME/.config/cue"
+									exitCode: 0
+									output:   ""
+								}, {
+									doc: ""
+									cmd: """
+											cat <<EOD >$HOME/.config/cue/logins.json
+											{"registries":{"registry.cue.works":{"access_token":"${TEST_USER_AUTHN_CUE_USER_NEW}","token_type":"Bearer"}}}
+											EOD
+											"""
+									exitCode: 0
+									output:   ""
+								}, {
+									doc: """
+											# Local registry.
+											# TODO: this is inherently racey. But not a problem in practice...
+											# for now. When it does become a problem we can solve this properly
+											# using a nc-based wait loop or similar.
+											"""
+									cmd:      "nohup cue mod registry localhost:55443 >/tmp/cue_mod_registry 2>&1 &"
+									exitCode: 0
+									output:   ""
+								}, {
+									doc:      ""
+									cmd:      "cue mod mirror --to 127.0.0.1:55443 cue.dev/x/k8s.io@v0.6.0"
+									exitCode: 0
+									output: """
+											mirroring cue.dev/x/k8s.io@v0.6.0
+
+											"""
+								}]
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

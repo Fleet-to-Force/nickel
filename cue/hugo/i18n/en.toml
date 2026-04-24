@@ -1,0 +1,159 @@
+# UI
+[ui_skip_nav]
+other = "Skip to content"
+[ui_branding_title]
+other = "Homepage of CUE"
+[ui_read_more]
+other = "Read more"
+[ui_min_read]
+other = "min. read"
+[ui_loading]
+other = "Loading"
+[ui_close]
+other = "Close"
+
+# Menus
+[ui_menu]
+other = "Menu"
+[ui_menu_open]
+other = "Show menu"
+[ui_menu_close]
+other = "Hide menu"
+[ui_menu_main]
+other = "Main menu"
+[ui_menu_mobile]
+other = "Mobile menu"
+[ui_menu_footer]
+other = "Footer menu"
+[ui_menu_legal]
+other = "Legal"
+[ui_menu_social]
+other = "Social"
+
+# Side menu
+[ui_sidemenu]
+other = "Side navigation"
+[ui_sidemenu_open]
+other = "Show side navigation"
+[ui_sidemenu_close]
+other = "Hide side navigation"
+
+# Legal menu
+[ui_legalmenu_issue_report]
+other = "Report an Issue"
+
+# Paging
+[ui_pager_name_prevnext]
+other = "Previous/Next navigation"
+[ui_pager_name_pages]
+other = "Pagination"
+[ui_pager_prev]
+other = "Previous"
+[ui_pager_next]
+other = "Next"
+[ui_pager_first]
+other = "First"
+[ui_pager_last]
+other = "Last"
+
+# Post (blog, articles etc.)
+[post_byline_by]
+other = "By"
+[post_created]
+other = "Created"
+[post_last_mod]
+other = "Last modified"
+[post_report_problem]
+other = "Report a problem"
+
+# Docs
+[docs_show_nav]
+other = "Show navigation"
+[docs_coming_soon]
+other = "this page will be coming soon"
+
+# Redirect page
+[redirect_title]
+other = "Redirecting..."
+[redirect_manually]
+other = "Click here if you are not redirected"
+
+# Error pages
+[error_404_title]
+other = "{ status: 404, message: \"Page not found\" }"
+[error_404_description]
+# This is raw HTML, and is only encoded as a multi-line string for our convenience
+other = """
+Oops! This page doesn't exist.<br><br>
+Try going back to our <strong><a href="/">home page</a></strong>,
+taking a look at our <strong><a href="/docs/">documentation</a></strong>,
+or <a href="/search/">searching for a page</a></strong>.
+"""
+
+# Search
+[search_title]
+other = "Search"
+[search_question]
+other = "What are you looking for?"
+[search_results]
+other = "documents found"
+[search_filters_title]
+other = "Filters"
+[search_help_link_text]
+other = "A guide explaining how to use filters to search this site"
+[search_placeholder]
+other = "Search in cuelang.org"
+[search_placeholder_content_type]
+other = "Search in {{ .contentType }}"
+
+[search_tags_title]
+other = "Tags"
+[search_tags_heading]
+other = "Filter by tags"
+[search_tags_input]
+other = "Filter tags"
+[search_tags_no-results]
+other = "No tags found"
+
+[search_contentType_title]
+other = "Content Type"
+[search_contentType_heading]
+other = "Filter by Content Type"
+[search_contentType_input]
+other = "Filter Content Type"
+[search_contentType_no-results]
+other = "No Content Type's found"
+
+# Figure shortcode
+[logo_redirect]
+other = "Go to the website"
+
+# Copy button
+[copy_title]
+other = "Copy code"
+[copy_filename]
+other = "Copy filename"
+[copy_message]
+other = "Copied!"
+
+# Author
+[author_github]
+other = "Github profile"
+[author_search]
+other = "Search all content by this author"
+
+# Share
+[share_open]
+other = "Open share options"
+[share_copy_link]
+other = "Copy link"
+[share_share_on]
+other = "Share on"
+[share_opens_new_tab]
+other = "opens in new tab"
+
+# Popup
+[popup_open]
+other = "Open popup"
+[popup_close]
+other = "Close popup"

@@ -1,0 +1,53 @@
+@import '../config/colors';
+@import '../mixins/marginless-child';
+@import '../mixins/screen';
+@import '../mixins/typography';
+
+.spotlight {
+    $self: &;
+
+    background-color: var(--spotlight-bg-color, $c-blue--lighter);
+    margin: 1.5rem (-$p-gutter);
+    padding: $p-gutter--large $p-gutter;
+
+    &__title {
+        @include style-heading-2;
+
+        --heading-color: #{ $c-blue--darker };
+
+        border-bottom: 1px solid transparentize($c-blue--darker, 0.8);
+        margin: 0 0 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    &__content {
+        @include marginless-child;
+
+        --heading-color: #{ $c-grey--darkest };
+        --text-link-color: #{ $c-grey--darkest};
+
+        color: var(--spotlight-text-color, $c-grey--darkest);
+    }
+
+    &--yellow {
+        --spotlight-bg-color: #{ $c-yellow--light }
+    }
+
+    &--related-content {
+        margin-top: 3rem;
+    }
+
+    @include screen($screen-normal) {
+        border-radius: $b-radius;
+        margin: 1.5rem (-50px); // 50px because of difference between article container and content container
+        padding: 3rem 50px; // 50px because of difference between article container and content container
+
+        .anchor {
+            left: -1.5rem;
+        }
+
+        &--related-content {
+            margin-top: 5rem;
+        }
+    }
+}

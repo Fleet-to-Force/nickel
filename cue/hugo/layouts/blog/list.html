@@ -1,0 +1,34 @@
+{{ define "main" }}
+    <section class="section section--blue">
+        <header class="section__header">
+            <div class="section__content">
+                <h1 class="section__title">{{ .Title }}</h1>
+                {{- with .Content -}}
+                    <div class="section__intro">{{ . }}</div>
+                {{- end -}}
+            </div>
+        </header>
+
+        {{- if .Pages -}}
+            <div class="section__body">
+                <div class="section__content">
+                    <ul class="list list--overview">
+                        {{ range $index, $teaser := .Pages }}
+                            <li class="list__item">
+                                {{- if eq $index 0 -}}
+                                    {{- partial "teaser.html" (dict "modifier" "featured" "context" . "path" .File.Dir) -}}
+                                {{- else -}}
+                                    {{- partial "teaser.html" . -}}
+                                {{- end -}}
+                            </li>
+                        {{ end }}
+                    </ul>
+                </div>
+            </div>
+
+            <footer class="section__footer">
+                <div class="section__content">{{- partial "paging/pages.html" . -}}</div>
+            </footer>
+        {{ end }}
+    </section>
+{{ end }}

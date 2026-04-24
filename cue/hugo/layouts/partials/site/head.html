@@ -1,0 +1,29 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="{{ with .Description | $.RenderString | plainify }}{{ . -}}
+{{ else }}{{ with .Summary | plainify }}{{ replace ( trim ( . | plainify | htmlUnescape | chomp | truncate 160) " ")  "\n" "" -}}
+{{ else }}{{ with .Site.Params.description -}}{{- . | $.RenderString | plainify -}}
+{{ end }}{{ end }}{{ end -}}">
+{{ hugo.Generator }}
+{{ if and (eq .Site.BaseURL .Site.Params.canonicalUrlPrefix) (ne .Params.no_index true) (ne .Type "examples") }}
+<meta name="robots" content="index, follow">
+{{ else }}
+<meta name="robots" content="noindex, nofollow">
+{{ end }}
+<link rel="preconnect" href="https://plausible.io/">
+<link rel="canonical" href="{{printf "%s%s" .Site.Params.canonicalUrlPrefix (strings.TrimPrefix "/" .RelPermalink) | safeURL }}" />
+{{ range .AlternativeOutputFormats -}}
+    <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .RelPermalink | safeURL }}">
+{{ end -}}
+{{ partialCached "site/favicons.html" . }}
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} | {{ end }}{{ .Site.Title }}{{ end }}</title>
+{{- template "_internal/opengraph.html" . -}}
+{{- template "_internal/twitter_cards.html" . -}}
+{{ partialCached "site/css.html" . }}
+{{ $jsHead := (resources.Get "ts/head.ts" | js.Build) }}
+{{ with resources.Get "ts/head.ts" }}
+<script>{{ ( . | js.Build | minify ).Content | safeJS }}</script>{{ end }}
+{{ if eq .Site.BaseURL .Site.Params.canonicalUrlPrefix }}
+    <script defer data-domain="cuelang.org" src="https://plausible.io/js/script.js"></script>
+    <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+{{ end }}

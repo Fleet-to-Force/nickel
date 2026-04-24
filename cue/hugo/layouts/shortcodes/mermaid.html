@@ -1,0 +1,6 @@
+{{ $caption := .Get "caption" | default "" }}
+<figure class="diagram">
+    <div class="diagram__content mermaid">{{ safeHTML .Inner }}</div>
+    {{- if $caption }}<figcaption class="diagram__caption">{{ $caption }}</figcaption>{{ end }}
+</figure>
+{{ .Page.Store.Set "jsMermaid" true }}

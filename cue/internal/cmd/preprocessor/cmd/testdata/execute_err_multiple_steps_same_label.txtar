@@ -1,0 +1,42 @@
+# Ensure that preprocessor correctly returns and error when it finds
+# multiple code nodes with the same label.
+
+unquote content/dir/en.md
+
+# Run the preprocessor
+! exec preprocessor execute
+cmpenv stderr stderr.golden
+
+-- hugo/.keep --
+-- content/dir/site.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>{{{with code "en" "json-superset"}}}
+>-- in.cue --
+>x: 5
+>-- out.yaml --
+>x: 5
+>{{{end}}}
+>{{{with code "en" "json-superset"}}}
+>-- in.cue --
+>x: 5
+>-- out.yaml --
+>x: 5
+>{{{end}}}
+-- golden/hugo/content/en/dir/index.md --
+---
+title: JSON Superset
+---
+-- stderr.golden --
+** $WORK/content/dir/en.md: node type "code" declares label "json-superset" multiple times:
+	$WORK/content/dir/en.md:4:8
+	$WORK/content/dir/en.md:10:8
+terminating because of errors

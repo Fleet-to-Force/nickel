@@ -1,0 +1,105 @@
+@import '../config/colors';
+@import '../mixins/container';
+@import '../mixins/object-fit';
+@import '../mixins/sr-only';
+@import '../mixins/stretch';
+@import '../mixins/svg';
+@import '../mixins/typography';
+
+.media {
+    $self: &;
+
+    display: block;
+    margin: 1.5rem 0;
+    position: relative;
+    width: 100%;
+
+    &__image {
+        // wrapper needed for copyright positioning
+        position: relative;
+    }
+
+    img,
+    picture {
+        height: auto;
+        min-height: 100px;
+        min-width: 100px;
+        width: 100%;
+
+        &.lazyloaded {
+            background-color: transparent;
+        }
+    }
+
+    svg {
+        display: block;
+        max-height: 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    &__caption {
+        @include style-text-small;
+
+        font-style: italic;
+        padding-right: 0;
+        width: 100%;
+    }
+
+    &--video {
+        aspect-ratio: 16 / 9;
+        margin: 0;
+
+        embed,
+        object,
+        iframe {
+            @include stretch;
+        }
+    }
+
+    &--wide {
+        #{ $self }__image {
+            margin: 0 (-$p-gutter);
+        }
+    }
+
+    @include screen($screen-simple) {
+        &--left {
+            float: left;
+            margin: 0.5rem $p-gutter 0 0;
+            max-width: 50%;
+
+            img,
+            picture {
+                width: auto;
+            }
+        }
+
+        &--right {
+            float: right;
+            margin: 0.5rem 0 0 $p-gutter;
+            max-width: 50%;
+
+            img,
+            picture {
+                width: auto;
+            }
+        }
+    }
+
+    @include screen($screen-normal) {
+        &--wide {
+            #{ $self }__image {
+                margin: 0 (-$p-gutter--large);
+            }
+        }
+    }
+
+    @include screen($screen-large) {
+        &--wide {
+            #{ $self }__image {
+                margin: 0 (2 * -$p-gutter--large);
+            }
+        }
+    }
+}

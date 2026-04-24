@@ -1,0 +1,40 @@
+{{- $summaryText := .Summary | plainify | htmlUnescape -}}
+{{- $summaryWords := split $summaryText " " -}}
+{{- $summaryShort := delimit (first 25 $summaryWords) " " | safeURL -}}
+
+<details class="share" data-dropdown>
+    <summary class="button button--icon button--light-blue share__button">
+        {{ partial "icon.html" (dict "icon" "share" "class" "button__icon") }}
+        <span>{{ T "share_open"}}</span>
+    </summary>
+
+    <ul class="share__list">
+        <li class="share__item" data-copy>
+            <button class="share__copy" data-copy-button data-copy-type="url" data-copy-value="{{ .Permalink }}">
+                {{ partial "icon.html" (dict "icon" "link" "class" "share__icon") }}
+                <span class="share__link-text">{{ T "share_copy_link" }}</span>
+                <span class="share__copy-message is-hidden" data-copy-message aria-live="polite">
+                    {{ T "copy_message" }}
+                </span>
+            </button>
+        </li>
+
+        <li class="share__item">
+            <a class="share__link" target="_blank" rel="noopener noreferrer"
+            href="https://x.com/intent/tweet?url={{ .Permalink | safeURL }}&text={{ $summaryShort }}">
+                {{ partial "icon.html" (dict "icon" "social-x" "class" "share__icon") }}
+                <span class="share__link-text">{{ T "share_share_on" }} X (Twitter)</span>
+                <span class="sr-only">({{ T "share_opens_new_tab" }})</span>
+            </a>
+        </li>
+
+        <li class="share__item">
+            <a class="share__link" target="_blank" rel="noopener noreferrer"
+            href="https://www.linkedin.com/sharing/share-offsite/?text={{ $summaryShort }}%20{{ .Permalink | safeURL }}">
+                {{ partial "icon.html" (dict "icon" "social-linkedin" "class" "share__icon") }}
+                <span class="share__link-text">{{ T "share_share_on" }} LinkedIn</span>
+                <span class="sr-only">({{ T "share_opens_new_tab" }})</span>
+            </a>
+        </li>
+    </ul>
+</details>

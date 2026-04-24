@@ -1,0 +1,30 @@
+# Package & Version Managers
+node_modules
+/.nvmrc
+
+# IDE's
+.idea
+.vscode/
+*.code-workspace
+
+# Project
+/_public/*
+!/_public/_redirects
+!/_public/robots.txt
+!/_public/aliases.cue
+/playground/_dist/
+/playground/.webpack_cache/
+/playground/main.wasm
+/hugo/resources/
+/hugo/.hugo_build.lock
+/hugo/static/playground/
+/hugo/.env
+/hugo/data/Repository.json
+
+# Well-known location for go binaries
+/.gobin
+
+# This is a well-known temporary file used by _scripts/siteCUE.bash
+/defresult.cue
+
+/.netlify/

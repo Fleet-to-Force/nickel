@@ -1,0 +1,181 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../mixins/clear-fix';
+@import '../mixins/container';
+@import '../mixins/screen';
+@import '../mixins/separator-line';
+@import '../mixins/typography';
+
+.section {
+    $self: &;
+
+    @include clear-fix;
+
+    --section-padding: 3rem;
+
+    background-color: var(--section-bg-color, transparent);
+    padding: var(--section-padding) 0;
+    position: relative;
+
+    &:first-child {
+        padding-top: 1rem;
+    }
+
+    &__header,
+    &__body,
+    &__footer {
+        position: relative;
+
+        & + #{ $self }__header,
+        & + #{ $self }__body,
+        & + #{ $self }__footer {
+            padding-top: 0;
+        }
+    }
+
+    &__header {
+        & + #{ $self }__body {
+            margin-top: 2rem;
+        }
+    }
+
+    &__content {
+        @include clear-fix;
+        @include container($w-section-content);
+
+        padding: 0 $p-gutter;
+        position: relative;
+    }
+
+    &__container {
+        @include container($w-section-container);
+
+        padding: 0 $p-gutter;
+        position: relative;
+    }
+
+    &__title {
+        @include style-heading-1;
+
+        margin: 0;
+
+        & + #{ $self }__intro {
+            margin-top: 1rem;
+        }
+    }
+
+    &__intro {
+        & > :last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__footer {
+        margin-top: 2rem;
+    }
+
+    &--center {
+        #{ $self }__header,
+        #{ $self }__footer {
+            text-align: center;
+        }
+    }
+
+    &--is-first {
+        padding-top: 0;
+    }
+
+    &--cards {
+        .cards {
+            margin-top: 0;
+        }
+    }
+
+    &--overview {
+        #{ $self }__header {
+            &::after {
+                @include separator-line;
+
+                margin: 2rem auto 0;
+            }
+        }
+    }
+
+    @each $theme, $color in $themes {
+        &--#{ $theme } {
+            --section-bg-color: #{$color};
+
+            + #{ $self }--#{ $theme } {
+                padding-top: 0;
+            }
+        }
+    }
+
+    @include screen($screen-simple) {
+        --section-padding: 4rem;
+
+        &:first-child {
+            padding-top: 0.75rem;
+        }
+
+        &__header {
+            & + #{ $self }__body {
+                margin-top: 3rem;
+            }
+        }
+
+        &__footer {
+            margin-top: 4rem;
+        }
+
+        &--search {
+            #{ $self }__header {
+                padding-bottom: 2rem;
+            }
+        }
+    }
+
+    @include screen($screen-normal) {
+        --section-padding: 5rem;
+
+        &__header {
+            &--small {
+                #{ $self }__title,
+                #{ $self }__intro {
+                    width: 50%;
+                }
+            }
+        }
+
+        &__container {
+            padding: 0 $p-gutter--large;
+        }
+
+        &--logos,
+        &--overview {
+            #{ $self }__header {
+                padding-bottom: 2rem;
+            }
+        }
+    }
+
+    @include screen($screen-large) {
+        --section-padding: 6rem;
+
+        &:first-child {
+            padding-top: 0;
+        }
+
+        &__container {
+            padding: 0 ($p-gutter--large * 2);
+        }
+
+        &--logos {
+            --section-padding: 6rem;
+
+            #{ $self }__header {
+                padding-bottom: 2rem;
+            }
+        }
+    }
+}

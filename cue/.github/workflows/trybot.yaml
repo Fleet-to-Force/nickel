@@ -1,0 +1,250 @@
+# Code generated internal/ci/ci_tool.cue; DO NOT EDIT.
+
+name: TryBot
+"on":
+  push:
+    branches:
+      - ci/test
+      - master
+    tags-ignore:
+      - v*
+  pull_request: {}
+  schedule:
+    - cron: 0 2 * * *
+  workflow_dispatch:
+    inputs:
+      scheduled:
+        description: Whether a workflow_dispatch was itself the result of a scheduled dispatch
+        required: true
+        default: "false"
+env: {}
+jobs:
+  test:
+    defaults:
+      run:
+        shell: bash --noprofile --norc -euo pipefail {0}
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    runs-on: namespace-profile-linux-amd64
+    steps:
+      - if: runner.os == 'macOS'
+        name: Update Homebrew (macOS)
+        run: brew update
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reset git directory modification times
+        run: touch -t 202211302355 $(find * -type d)
+      - name: Restore git file modification times
+        uses: chetan/git-restore-mtime-action@cbf8161ddb4e9b162409104954fb540e8a38c1da
+      - id: DispatchTrailer
+        name: Try to extract Dispatch-Trailer
+        run: |-
+          x="$(git log -1 --pretty='%(trailers:key=Dispatch-Trailer,valueonly)')"
+          if [[ "$x" == "" ]]
+          then
+             # Some steps rely on the presence or otherwise of the Dispatch-Trailer.
+             # We know that we don't have a Dispatch-Trailer in this situation,
+             # hence we use the JSON value null in order to represent that state.
+             # This means that GitHub expressions can determine whether a Dispatch-Trailer
+             # is present or not by checking whether the fromJSON() result of the
+             # output from this step is the JSON value null or not.
+             x=null
+          fi
+          echo "value<<EOD" >> $GITHUB_OUTPUT
+          echo "$x" >> $GITHUB_OUTPUT
+          echo "EOD" >> $GITHUB_OUTPUT
+      - if: |-
+          ((github.ref == 'refs/heads/master') && (! (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"')))) && (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"'))
+        name: Check we don't have Dispatch-Trailer on a protected branch
+        run: |-
+          echo "github.event.head_commit.message contains Dispatch-Trailer but we are on a protected branch"
+          false
+      - name: Fail if Preprocessor-No-Write-Cache trailer is present for a scheduled workflow run
+        if: github.event.inputs.scheduled == 'true'
+        run: '! ./_scripts/noWriteCache.bash HEAD'
+      - if: github.repository != 'cue-lang/cuelang.org'
+        run: |
+          echo 'Setting CI_NO_SKIP_CACHE=true'
+          echo "CI_NO_SKIP_CACHE=true" >> $GITHUB_ENV
+      - if: runner.os == 'macOS'
+        name: Set TMPDIR environment variable (${{runner.os}})
+        run: |-
+          mkdir $HOME/.tmp
+          echo "TMPDIR=$HOME/.tmp" >> $GITHUB_ENV
+      - if: runner.os == 'macOS'
+        name: Write lima config (${{runner.os}})
+        run: |-
+          mkdir -p ~/.lima/default
+          cat <<EOD > ~/.lima/default/lima.yaml
+          mounts:
+            - location: "~"
+          	 writable: true
+            - location: "$TMPDIR"
+          	 writable: true
+          EOD
+      - if: runner.os == 'macOS'
+        name: Install Docker (${{runner.os}})
+        run: |-
+          brew install colima docker
+          colima start --mount-type virtiofs
+          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
+      - if: runner.os == 'macOS'
+        name: Set DOCKER_HOST environment variable (${{runner.os}})
+        run: echo "DOCKER_HOST=unix://$HOME/.colima/default/docker.sock" >> $GITHUB_ENV
+      - if: runner.os == 'macOS'
+        name: Install macOS utils
+        run: brew install coreutils
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.13.1
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          cache: false
+          go-version: 1.26.0
+      - name: Set common go env vars
+        run: |-
+          case $(go env GOARCH) in
+          amd64) go env -w GOAMD64=v3 ;;   # 2013 and later; makes `go test -race` 15% faster
+          arm64) go env -w GOARM64=v8.6 ;; # Apple M2 and later
+          esac
+
+          # Dump env for good measure
+          go env
+      - if: runner.os == 'Linux'
+        name: Install Hugo (${{ runner.os }})
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 0.155.3
+          extended: true
+      - if: runner.os == 'macOS'
+        name: Install Hugo (${{ runner.os }})
+        run: brew install hugo
+      - name: 'Set PREPROCESSOR_NOWRITECACHE if Preprocessor-No-Write-Cache: true'
+        run: |
+          if ./_scripts/noWriteCache.bash HEAD
+          then
+          	echo 'Found Preprocessor-No-Write-Cache trailer'
+          	echo "PREPROCESSOR_NOWRITECACHE=true" >> $GITHUB_ENV
+          fi
+      - if: github.event_name != 'schedule' && matrix.runner != 'ns-windows-amd64'
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          cache: go
+          path: |-
+            ~/.cache/node-gyp
+            ~/.npm
+            ${{ github.workspace }}/playground/.webpack_cache
+      - if: |-
+          github.repository == 'cue-lang/cuelang.org' && (((github.ref == 'refs/heads/master') && (! (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"')))) || (github.ref == 'refs/heads/ci/test'))
+        run: go env -w GOFLAGS=-count=1
+      - name: Early git and code sanity checks
+        run: go run cuelang.org/go/internal/ci/checks@v0.15.0
+      - name: Perform early content checks
+        run: _scripts/contentLint.bash
+      - name: Check site CUE configuration
+        run: _scripts/runPreprocessor.bash execute --check
+      - name: Regenerate
+        run: go generate ./...
+      - name: Regenerate Playground
+        working-directory: playground
+        run: go generate ./...
+      - if: always()
+        name: Check that git is clean at the end of the job
+        run: test -z "$(git status --porcelain)" || (git status; git diff; false)
+      - if: ( github.repository == 'cue-lang/cuelang.org' && (github.ref == 'refs/heads/master' || (github.ref == 'refs/heads/ci/test')) )
+        name: Login to GitHub container registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |-
+          echo "$GITHUB_TOKEN" \
+          | docker login ghcr.io -u nobody --password-stdin
+      - env:
+          CI_PUSH_CONTAINER_IMAGE: ${{ ( github.repository == 'cue-lang/cuelang.org' && (github.ref == 'refs/heads/master' || (github.ref == 'refs/heads/ci/test')) ) && 'true' || 'false' }}
+        run: ./_scripts/buildDockerImage.bash
+      - working-directory: hugo
+        name: npm install to check package-lock.json clean
+        run: npm install --package-lock-only --ignore-scripts
+      - working-directory: hugo
+        if: always()
+        name: Check that git is clean at the end of the job
+        run: test -z "$(git status --porcelain)" || (git status; git diff; false)
+      - working-directory: hugo
+        name: npm ci
+        run: npm ci
+      - name: Test
+        run: go test ./...
+      - name: Test Playground
+        working-directory: playground
+        run: go test ./...
+      - env:
+          STATICCHECK_CACHE: /cache/staticcheck
+        run: go tool staticcheck ./...
+      - working-directory: playground
+        env:
+          STATICCHECK_CACHE: /cache/staticcheck
+        run: go tool -modfile=../go.mod staticcheck ./...
+      - run: |-
+          go mod tidy -diff
+          go vet ./...
+      - working-directory: playground
+        run: |-
+          go mod tidy -diff
+          go vet ./...
+      - name: Login to CUE registry
+        uses: cue-labs/registry-login-action@v1
+      - if: |-
+          github.repository == 'cue-lang/cuelang.org-trybot' && (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"trybot"'))
+        run: echo "BUILD_DRAFTS=--buildDrafts" >> $GITHUB_ENV
+      - name: Dist
+        run: ./_scripts/build.bash --baseURL https://cl-${{ fromJSON(steps.DispatchTrailer.outputs.value).CL }}-${{ fromJSON(steps.DispatchTrailer.outputs.value).patchset }}--cue-cls.netlify.app ${BUILD_DRAFTS:-}
+      - if: always()
+        name: Check that git is clean at the end of the job
+        run: test -z "$(git status --porcelain)" || (git status; git diff; false)
+      - run: ./playground/_scripts/checkCUEVersion.bash
+      - working-directory: hugo
+        run: npm run lint
+      - if: |-
+          github.repository == 'cue-lang/cuelang.org-trybot' && (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"trybot"'))
+        name: Install Netlify CLI
+        run: npm install -g netlify-cli@23.15.1
+      - if: |-
+          github.repository == 'cue-lang/cuelang.org-trybot' && (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"trybot"'))
+        name: Deploy preview of CL
+        run: 'netlify deploy --alias cl-${{ fromJSON(steps.DispatchTrailer.outputs.value).CL }}-${{ fromJSON(steps.DispatchTrailer.outputs.value).patchset }} -f functions -d _public -m "Deploy preview of CL" -s 72d2c75a-cd7f-484a-bc41-a1f6586f9e31 --debug '
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN_CUE_CLS}}
+      - if: |-
+          github.repository == 'cue-lang/cuelang.org-trybot' && (contains(github.event.head_commit.message, '
+          Dispatch-Trailer: {"type":"trybot"'))
+        name: Perform monitoring checks on https://cl-${{ fromJSON(steps.DispatchTrailer.outputs.value).CL }}-${{ fromJSON(steps.DispatchTrailer.outputs.value).patchset }}--cue-cls.netlify.app
+        run: _scripts/checkEndpoints.bash https://cl-${{ fromJSON(steps.DispatchTrailer.outputs.value).CL }}-${{ fromJSON(steps.DispatchTrailer.outputs.value).patchset }}--cue-cls.netlify.app
+      - if: github.repository == 'cue-lang/cuelang.org' && (github.ref == 'refs/heads/master')
+        run: npm run algolia
+        working-directory: hugo
+        env:
+          ALGOLIA_APP_ID: 5LXFM0O81Q
+          ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_INDEX_KEY }}
+          ALGOLIA_INDEX_NAME: cuelang.org
+          ALGOLIA_INDEX_FILE: ../_public/algolia.json
+      - if: ( github.repository == 'cue-lang/cuelang.org' && (github.ref == 'refs/heads/master' || (github.ref == 'refs/heads/ci/test')) )
+        name: Perform monitoring checks on https://cuelang.org
+        run: _scripts/checkEndpoints.bash https://cuelang.org
+      - name: 'tip.cuelang.org: Patch the site to be compatible with the tip of cue-lang/cue'
+        run: _scripts/tipPatchApply.bash
+      - if: ( github.repository == 'cue-lang/cuelang.org' && (github.ref == 'refs/heads/master' || (github.ref == 'refs/heads/ci/test')) )
+        name: Perform monitoring checks on https://tip.cuelang.org
+        run: _scripts/checkEndpoints.bash https://tip.cuelang.org

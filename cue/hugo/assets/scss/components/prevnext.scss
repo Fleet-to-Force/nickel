@@ -1,0 +1,88 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../mixins/container';
+@import '../mixins/screen';
+@import '../mixins/typography';
+
+.prevnext {
+    $self: &;
+
+    --prevnext-bg-color: #{ $c-blue--lighter };
+    --prevnext-color: #{ $c-black };
+    --prevnext-icon-color: #{ $c-blue };
+    --prevnext-icon-size: 30px;
+
+    padding-bottom: 2rem;
+    position: relative;
+
+    &__container {
+        @include container($w-content);
+
+        align-items: center;
+        color: var(--prevnext-color);
+        display: flex;
+        gap: $p-gutter;
+        justify-content: space-between;
+        padding: 0 $p-gutter;
+    }
+
+    &__prev,
+    &__next {
+        align-items: center;
+        background-color: var(--prevnext-bg-color);
+        border-radius: 36px;
+        display: flex;
+        gap: $p-gutter;
+        max-width: calc(50% - 10px);
+        padding: 6px;
+        text-decoration: none;
+        transition: background-color 0.2s ease-in-out;
+        width: fit-content;
+
+        &:focus-visible,
+        &:hover {
+            --prevnext-bg-color: #{ $c-lavender--light };
+        }
+
+        &[disabled] {
+            display: none;
+        }
+    }
+
+    /* stylelint-disable no-descending-specificity */
+    &__next {
+        justify-content: flex-end;
+        margin-left: auto;
+    }
+    /* stylelint-enable no-descending-specificity */
+
+    &__icon {
+        fill: var(--prevnext-icon-color);
+        flex: 0 0 var(--prevnext-icon-size);
+        height: var(--prevnext-icon-size);
+        width: var(--prevnext-icon-size);
+    }
+
+    &__text {
+        @include style-text-small;
+
+        display: none;
+        font-weight: $weight-medium;
+    }
+
+    @include screen($screen-simple) {
+        padding-bottom: 3rem;
+
+        &__prev {
+            padding-right: 1.5rem;
+        }
+
+        &__next {
+            padding-left: 1.5rem;
+        }
+
+        &__text {
+            display: block;
+        }
+    }
+}

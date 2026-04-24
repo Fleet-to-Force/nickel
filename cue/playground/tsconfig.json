@@ -1,0 +1,35 @@
+{
+	"compilerOptions": {
+		"allowJs": false,
+		"allowSyntheticDefaultImports": true,
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+		"jsx": "react",
+		"lib": [
+			"es2020",
+			"dom"
+		],
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"paths": {
+			"@components/*": [ "components/*" ],
+			"@config/*": [ "config/*" ],
+			"@containers/*": [ "containers/*" ],
+			"@models/*": [ "models/*" ],
+			"@helpers/*": [ "helpers/*" ],
+		},
+		"removeComments": true,
+		"sourceMap": true,
+		"strict": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": false,
+		"target": "es2020"
+	},
+  "exclude": [
+    "node_modules",
+    "vendor",
+  ]
+}

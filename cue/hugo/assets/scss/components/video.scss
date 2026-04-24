@@ -1,0 +1,110 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../mixins/center';
+@import '../mixins/object-fit';
+@import '../mixins/screen';
+@import '../mixins/sr-only';
+@import '../mixins/stretch';
+@import '../mixins/typography';
+
+.video {
+    $self: &;
+
+    aspect-ratio: 16 / 9;
+    background-color: var(--video-background, $c-blue--darker);
+    clear: both;
+    color: $c-white;
+    margin: 2rem (-$p-gutter);
+    overflow: hidden;
+    position: relative;
+
+    &:focus,
+    &:focus-within,
+    &:hover {
+        #{ $self }__image {
+            filter: none;
+        }
+
+        #{ $self }__icon {
+            transform: scale(1.2);
+        }
+
+        #{ $self }__icon-background {
+            fill: $c-youtube;
+        }
+    }
+
+    &__image {
+        @include object-fit;
+
+        filter: brightness(0.8) blur(1px);
+        margin: 0;
+        opacity: 0.8;
+        position: absolute;
+        transition: filter 0.3s ease-in-out;
+    }
+
+    &__button {
+        @include stretch;
+
+        text-decoration: none;
+
+        span {
+            @include sr-only;
+        }
+    }
+
+    &__content {
+        align-items: flex-end;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 $p-gutter $p-gutter;
+        position: absolute;
+        width: 100%;
+
+        &--no-title {
+            justify-content: flex-end;
+        }
+    }
+
+    &__title {
+        @include style-heading-4;
+
+        color: var(--video-title-color, $c-white);
+        margin-top: 0;
+        text-shadow: 0 0 2px $c-black;
+        text-transform: none;
+    }
+
+
+    &__icon {
+        flex-shrink: 0;
+        height: 50px;
+        transition: transform 0.3s ease-in-out;
+        width: auto;
+    }
+
+    &__icon-background {
+        fill: $c-red--light;
+        transition: fill 0.3s ease-in-out;
+    }
+
+    @include screen($screen-simple) {
+        &__content {
+            padding: 0 $p-gutter--large $p-gutter;
+        }
+
+        &__icon {
+            height: 60px;
+        }
+    }
+
+    @include screen($screen-normal) {
+        margin: 2rem auto;
+
+        &__icon {
+            height: 70px;
+        }
+    }
+}

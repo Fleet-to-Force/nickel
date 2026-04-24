@@ -1,0 +1,14 @@
+@import '../mixins/typography';
+
+.table {
+    max-width: 100%;
+    overflow: auto;
+
+    table {
+        max-width: 100%;
+    }
+
+    &--yellow {
+        --table-head-background: #{ $c-yellow };
+    }
+}

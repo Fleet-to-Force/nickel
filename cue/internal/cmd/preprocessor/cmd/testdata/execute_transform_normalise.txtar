@@ -1,0 +1,54 @@
+# Ensure that preprocessor normalises root md files and writes them back when
+# they differ. Note the extra spacing around the {{{ with ... }}} below
+
+unquote content/dir/en.md
+unquote golden/content/dir/en.md
+
+# Run the preprocessor
+exec preprocessor execute --debug=all
+
+# Verify that the source file is intact
+cmp content/dir/en.md golden/content/dir/en.md
+
+-- content/dir/site.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>{{{ with code "en" "json-superset" }}}
+>-- in.cue --
+>x: {
+>y: 5
+>}
+>-- out.cue --
+>x: {
+>    y: 5
+>}
+>{{{end}}}
+>
+>This is a {{{ def "test" }}}
+-- golden/content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>{{{with code "en" "json-superset"}}}
+>-- in.cue --
+>x: {
+>	y: 5
+>}
+>-- out.cue --
+>x: {
+>    y: 5
+>}
+>{{{end}}}
+>
+>This is a {{{def "test"}}}
+-- hugo/.gitkeep --

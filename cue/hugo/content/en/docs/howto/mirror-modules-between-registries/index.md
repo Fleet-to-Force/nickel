@@ -1,0 +1,67 @@
+---
+title: Mirroring modules between registries
+toc_hide: true
+authors: [jpluscplusm]
+tags: [modules]
+---
+{{<sidenote text="Requires CUE v0.13.0 or later">}}
+
+This guide demonstrates how to use the
+[`cue mod mirror`]({{<relref"docs/reference/command/cue-help-mod-mirror">}})
+command to copy
+[CUE modules]({{<relref"docs/reference/modules">}})
+between registries.
+
+<!--more-->
+
+The `cue mod mirror` command is available in CUE v0.13.0 and later. It can be
+used to mirror modules between any pair of registries for which you have
+appropriate access permissions.
+The example shown here mirrors modules from the CUE
+[Central Registry](https://registry.cue.works)
+to a local, in-memory registry. The contents of this local registry are
+ephemeral: they disappear when it shuts down -- so don't use this registry to
+store your important modules!
+
+{{< step stepNumber="1" >}}
+Start the in-memory registry running in the background, listening on localhost port `55443`:
+
+````text { title="TERMINAL" type="terminal" codeToCopy="Y3VlIG1vZCByZWdpc3RyeSAxMjcuMC4wLjE6NTU0NDM=" }
+$ cue mod registry 127.0.0.1:55443
+````
+
+Every module mirrored to this ephemeral registry will disappear when you stop it.
+{{< /step >}}
+
+{{< step stepNumber="2" >}}
+Copy the `k8s.io` curated module from the Central Registry to the local registry:
+
+````text { title="TERMINAL" type="terminal" codeToCopy="Y3VlIG1vZCBtaXJyb3IgLS10byAxMjcuMC4wLjE6NTU0NDMgY3VlLmRldi94L2s4cy5pb0B2MC42LjA=" }
+$ cue mod mirror --to 127.0.0.1:55443 cue.dev/x/k8s.io@v0.6.0
+mirroring cue.dev/x/k8s.io@v0.6.0
+````
+
+_We choose a specific version in this example, but you could omit that version
+or use `@latest`._
+
+The [`cue mod mirror`]({{<relref"docs/reference/command/cue-help-mod-mirror">}})
+command copies each module from and to the appropriate registry for its
+[module path]({{<relref"docs/reference/modules#module-path">}}) --
+which is usually the Central Registry, but can be configured differently (see
+<code>{{<linkto/inline"reference/command/cue-help-registryconfig">}}</code>
+for more information).
+In this example we overrode the configured destination registry using the `--to` flag.
+The `--from` flag can also be used to override the configured source registry.
+
+By default, `cue mod mirror` copies the latest version of each module
+specified, along with that version's dependencies and all their transitive
+dependencies. This behaviour can be varied, as described by
+<code>{{<linkto/inline"reference/command/cue-help-mod-mirror">}}</code>.
+{{< /step >}}
+
+## Related content
+
+- {{<linkto/related/reference"command/cue-help-mod-mirror">}}
+- {{<linkto/related/reference"command/cue-help-registryconfig">}}
+- {{<linkto/related/reference"modules">}}
+- The CUE [Central Registry](https://registry.cue.works)

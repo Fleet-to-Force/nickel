@@ -1,0 +1,69 @@
+@import '../config/colors';
+@import '../config/typography';
+
+.tag {
+    align-items: center;
+    background: var(--tag-background, $c-blue--lighter);
+    border-radius: 1.5rem;
+    color: $c-black;
+    display: flex;
+    font-size: 0.8125rem;
+    font-weight: $weight-medium;
+    gap: 0.5rem;
+    line-height: 1.25;
+    min-height: 1.5rem;
+    padding: 0 0.6rem 0 0.5rem;
+    position: relative;
+    text-decoration: none;
+    transition: background-color 0.2s;
+
+    &:focus-visible,
+    &:hover {
+        --tag-background: #{ $c-lavender--light };
+    }
+
+    &::before {
+        background: var(--tag-color, $c-filter-blue);
+        border-radius: 50%;
+        content: '';
+        display: block;
+        height: 0.75rem;
+        width: 0.75rem;
+    }
+
+    &--inline {
+        display: inline-flex;
+    }
+
+    &--red {
+        --tag-color: #{ $c-filter-red };
+    }
+
+    &--orange {
+        --tag-color: #{ $c-filter-orange };
+    }
+
+    &--green {
+        --tag-color: #{ $c-filter-green };
+    }
+
+    &--pink {
+        --tag-color: #{ $c-filter-pink };
+    }
+
+    &--purple {
+        --tag-color: #{ $c-filter-purple };
+    }
+
+    &--lilac {
+        --tag-color: #{ $c-filter-lilac };
+    }
+
+    &--blue {
+        --tag-color: #{ $c-filter-blue };
+    }
+
+    &--lavender {
+        --tag-color: #{ $c-filter-lavender };
+    }
+}

@@ -1,0 +1,14 @@
+{{ define "main" }}
+    <section class="section section--blue section--search">
+        <header class="section__header">
+            <div class="section__content">
+                <h1 class="section__title">{{ .Title }}</h1>
+            </div>
+        </header>
+        <div class="section__body">
+            <div class="section__content">
+                {{- partial "search"  (dict "context" .) -}}
+            </div>
+        </div>
+    </section>
+{{ end }}

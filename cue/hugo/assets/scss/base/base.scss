@@ -1,0 +1,598 @@
+/* stylelint-disable no-descending-specificity, property-no-vendor-prefix */
+@import '../config/colors';
+@import '../config/sizes';
+@import '../config/typography';
+@import '../mixins/button';
+@import '../mixins/list-reset';
+@import '../mixins/screen';
+@import '../mixins/scrollbar';
+@import '../mixins/sr-only';
+@import '../mixins/typography';
+
+:root {
+    --text-color: #{ $c-grey--darkest };
+    --heading-color: #{ $c-blue };
+    --text-link-color: #{ $c-blue };
+    --caption-color: #{ transparentize($c-grey--darkest, 0.3) };
+    --dialog-animation-settings: 401ms ease;
+    --form-input-background: #{ $c-white };
+    --form-input-border: #{ $c-input };
+    --form-input-border-focus: #{ $c-blue };
+    --form-input-checked: #{ $c-blue };
+    --form-input-color: #{ $c-grey--dark };
+    --form-label-color: #{ $c-grey--darkest };
+    --hr-color: #{ transparentize($c-blue--darker, 0.8) };
+    --list-color: #{ $c-blue };
+    --mark-background-color: #{ $c-yellow };
+    --mark-color: #{ $c-grey--darkest };
+    --pre-background-color: #{ $c-white };
+    --pre-border-color: #{ $c-grey-blue };
+    --pre-color: #{ $c-blue--darker };
+    --quote-background-color: #{ $c-grey--lightest };
+    --quote-color: #{ $c-blue--darker };
+    --quote-cite-color: #{ transparentize($c-black, 0.31) };
+    --quote-line-color: #{ $c-yellow };
+    --scrollbar-background: #{ $c-scrollbar-background };
+    --scrollbar-color: #{ $c-scrollbar-color };
+    --scrollbar-color-hover: #{ $c-scrollbar-color-hover };
+    --table-head-background: #{ $c-blue--lightest };
+    --table-row-background: #{ $c-blue--lightest };
+    --table-border-color: #{ transparentize($c-blue--light, 0.85) };
+}
+
+html,
+body {
+    font-size: 16px;
+    min-height: 100%;
+}
+
+body {
+    @include scrollbars;
+    @include style-text;
+
+    background-color: var(--body-background, $c-white);
+    color: var(--text-color);
+    -webkit-text-size-adjust: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @include style-heading;
+
+    color: var(--heading-color);
+    margin: 2.5rem 0 0.5rem;
+}
+
+h1 {
+    @include style-heading-1;
+
+    margin: 2.5rem 0 2rem;
+}
+
+h2 {
+    @include style-heading-2;
+
+    margin: 2.5rem 0 1rem;
+}
+
+h3 {
+    @include style-heading-3;
+}
+
+h4 {
+    @include style-heading-4;
+}
+
+h5,
+h6 {
+    @include style-heading-5;
+}
+
+p {
+    font-size: inherit;
+    font-style: inherit;
+    margin: 0 0 1.25em;
+}
+
+strong {
+    font-weight: $weight-bold;
+}
+
+small {
+    @include style-text-small;
+}
+
+a {
+    &:not([class]) {
+        border-bottom: 1px solid currentColor;
+        color: var(--text-link-color);
+        cursor: pointer;
+        font-weight: $weight-semibold;
+        text-decoration: none;
+        transition: border-bottom 0.2s ease-in;
+
+        &:hover {
+            border-bottom: 1px solid transparent;
+        }
+    }
+}
+
+hr {
+    background-color: var(--hr-color);
+    border: 0;
+    clear: both;
+    display: block;
+    height: 1px;
+    margin: 1rem 0;
+    padding: 0;
+}
+
+img,
+figure {
+    display: block;
+    width: 100%;
+}
+
+figcaption {
+    @include style-text;
+
+    color: var(--caption-color);
+    font-size: 0.875rem;
+    padding: 0.5rem;
+}
+
+ul,
+ol {
+    @include list-reset;
+
+    &:not([class]) {
+        line-height: 1.75;
+        margin: 0 0 1.25rem;
+
+        li {
+            margin: 0 0 0.125rem;
+            padding-left: 1.5rem;
+            position: relative;
+
+            &::before {
+                color: var(--list-color);
+                content: '\002022';
+                font-size: 1.5rem;
+                left: 4px;
+                line-height: 1.125;
+                position: absolute;
+                top: 0;
+            }
+
+            p {
+                margin: 0;
+
+                & + p {
+                    margin-top: 1rem;
+                }
+            }
+        }
+
+        ul,
+        ol {
+            margin: 0.5rem 0 0;
+        }
+
+        ul {
+            li {
+                &::before {
+                    content: '\0025E6';
+                }
+            }
+        }
+    }
+}
+
+ol {
+    &:not([class]) {
+        counter-reset: ol-number;
+
+        li {
+            counter-increment: ol-number;
+
+            &::before {
+                content: counter(ol-number) '.';
+                font-size: inherit;
+                font-weight: $weight-bold;
+                left: 3px;
+                line-height: 1.75;
+            }
+        }
+    }
+}
+
+dl {
+    margin: 0 0 1.5rem;
+}
+
+dt {
+    @include style-text;
+
+    font-weight: $weight-bold;
+    margin: 0.75rem 0 0;
+}
+
+dd {
+    @include style-text;
+}
+
+table {
+    border-collapse: collapse;
+    border-radius: 0;
+    margin: 0 0 1rem;
+    overflow: hidden;
+    text-align: left;
+    width: 100%;
+}
+
+thead {
+    background-color: var(--table-head-background);
+}
+
+th,
+td {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    vertical-align: top;
+
+    p:last-of-type {
+        margin-bottom: 0;
+    }
+}
+
+th {
+    @include style-heading;
+
+    border-bottom: 1px solid var(--table-border-color);
+    color: var(--heading-color);
+    line-height: 1.75;
+}
+
+tr {
+    &:nth-child(even) {
+        background-color: var(--table-row-background);
+        border-bottom: 1px solid var(--table-border-color);
+        border-top: 1px solid var(--table-border-color);
+    }
+}
+
+blockquote {
+    background-color: var(--quote-background-color, $c-grey--lightest);
+    border-radius: $b-radius;
+    clear: both;
+    color: var(--quote-color, $c-blue--darker);
+    display: block;
+    margin: 2rem 0;
+    padding: $p-gutter;
+
+    & > :first-child {
+        margin-top: 0;
+    }
+
+    & > :last-child {
+        margin-bottom: 0;
+    }
+
+    cite {
+        color: var(--quote-cite-color, transparentize($c-black, 0.31));
+        display: block;
+        font-size: 1rem;
+        font-style: normal;
+        line-height: 1.5;
+        margin-top: $p-gutter--large;
+        position: relative;
+
+        &::before {
+            background-color: var(--quote-line-color, $c-yellow);
+            content: '';
+            height: 3px;
+            position: absolute;
+            top: -15px;
+            width: 80px;
+        }
+    }
+}
+
+abbr {
+    &[title] {
+        border-bottom: 1px dotted currentColor;
+        color: currentColor;
+        cursor: help;
+        font-weight: $weight-bold;
+        text-decoration: none;
+        transition: border 0.2s ease-in-out;
+
+        &:hover {
+            border-bottom: 1px solid currentColor;
+        }
+    }
+}
+
+mark,
+ins {
+    background-color: var(--mark-background-color);
+    border: 0;
+    color: var(--mark-color);
+    text-decoration: none;
+}
+
+code,
+kbd,
+tt,
+var,
+samp,
+pre {
+    font-family: $font-monospace;
+    font-size: 1rem;
+    line-height: 1.625;
+}
+
+code {
+    --pre-background-color: #{ $c-grey-blue };
+    --pre-padding: 0 4px;
+
+    background-color: var(--pre-background-color);
+    border-radius: 2px;
+    font-size: inherit;
+    font-style: normal;
+    font-weight: inherit;
+    line-height: inherit;
+    padding: var(--pre-padding);
+    white-space: pre;
+}
+
+pre {
+    background-color: var(--pre-background-color);
+    border: 2px solid var(--pre-border-color);
+    border-radius: $b-radius;
+    color: var(--pre-color);
+    font-size: 0.875rem;
+    margin: 0 0 1.5rem;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 0.875rem 1rem;
+
+    code {
+        --pre-background-color: transparent;
+        --pre-padding: 0;
+    }
+}
+
+audio,
+canvas,
+iframe,
+svg,
+video {
+    vertical-align: middle;
+}
+
+iframe {
+    max-width: 100%;
+}
+
+fieldset {
+    border: 0;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+}
+
+input {
+    box-shadow: none;
+    outline: none;
+
+    &[type='text'],
+    &[type='email'],
+    &[type='tel'],
+    &[type='number'],
+    &[type='date'],
+    &[type='search'] {
+        appearance: none;
+        background: var(--form-input-background);
+        border: 1px solid var(--form-input-border);
+        border-radius: $b-radius;
+        box-sizing: border-box;
+        color: var(--form-input-color);
+        display: block;
+        font-family: inherit;
+        font-size: 16px;
+        padding: 1ex;
+        width: 100%;
+
+        &::placeholder {
+            color: $c-grey;
+            opacity: 1;
+        }
+
+        &:focus {
+            border-color: var(--form-input-border-focus);
+            outline: none;
+        }
+
+        &.has-error,
+        .has-error & {
+            border-color: $c-error;
+        }
+    }
+
+    &[type='radio'],
+    &[type='checkbox'] {
+        appearance: none;
+        background-color: var(--form-input-border);
+        border: 7px solid var(--form-input-background);
+        box-shadow: 0 0 0 2px var(--form-input-border);
+        cursor: pointer;
+        display: inline-block;
+        height: 14px;
+        margin: 0 0.3rem 0 2px; // because box shadow
+        outline: none;
+        transition: border 0.15s ease-in-out, background-color 0.15s ease-in-out;
+        vertical-align: -1px;
+        width: 14px;
+        will-change: border;
+
+        &:hover {
+            border: 2px solid var(--form-input-background);
+        }
+
+        &:checked {
+            background-color: var(--form-input-checked);
+            border: 2px solid var(--form-input-background);
+        }
+
+        & + label {
+            display: inline-block;
+            font-weight: $weight-normal;
+        }
+
+        &.has-error,
+        .has-error & {
+            box-shadow: 0 0 0 2px $c-error;
+        }
+    }
+
+    &[type='radio'] {
+        border-radius: 50%;
+    }
+
+    &[type='submit'] {
+        @include button-base;
+        @include button-style(
+            var(--button-background, #{ $c-yellow }),
+            var(--button-border, #{ $c-yellow }),
+            var(--button-color, #{ $c-blue--darker }),
+            var(--button-background-hover, #{ $c-blue--darker }),
+            var(--button-border-hover, #{ $c-blue--darker }),
+            var(--button-color-hover, #{ $c-yellow }),
+            var(--button-background-disabled, #{ $c-grey--light }),
+            var(--button-border-disabled, #{ $c-grey--light }),
+            var(--button-color-disabled, #{ $c-grey })
+        );
+    }
+
+    &[type='date'] {
+        appearance: none;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    &[type='number'] {
+        -moz-appearance: textfield;
+        appearance: none;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    &[type='search'] {
+        appearance: none;
+
+        &::-webkit-search-cancel-button {
+            appearance: none;
+            display: none;
+        }
+    }
+
+    &::-ms-clear {
+        display: none;
+    }
+}
+
+textarea {
+    appearance: none;
+    border: 1px solid var(--form-input-border);
+    border-radius: $b-radius;
+    display: block;
+    font-family: inherit;
+    font-size: 14px;
+    min-height: 7em;
+    padding: 1ex;
+    resize: vertical;
+    width: 100%;
+
+    &:focus {
+        border-color: var(--form-input-border-focus);
+        outline: none;
+    }
+
+    &.has-error,
+    .has-error & {
+        border-color: $c-error;
+    }
+}
+
+legend {
+    @include style-heading;
+
+    color: var(--heading-color);
+    display: block;
+    font-size: 18px;
+}
+
+label {
+    color: var(--form-label-color);
+    display: block;
+    font-family: $font-inter;
+    font-size: 15px;
+    font-weight: $weight-bold;
+
+    &[for] {
+        cursor: pointer;
+    }
+}
+
+select {
+    background-color: var(--form-input-background);
+    border: 1px solid var(--form-input-border);
+    color: var(--form-input-color);
+    font-family: $font-inter;
+    font-weight: $weight-normal;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 1rem;
+    width: 100%;
+
+    &:focus {
+        border-color: var(--form-input-border-focus);
+        outline: none;
+    }
+
+    &.has-error,
+    .has-error & {
+        border-color: $c-error;
+    }
+}
+
+// Simple helper classes
+
+.sr-only {
+    @include sr-only;
+}
+
+@include screen($screen-simple) {
+    blockquote {
+        padding: $p-gutter--large;
+    }
+}
+
+@include screen($screen-normal) {
+    blockquote {
+        padding: $p-gutter--large 3.75rem;
+    }
+}

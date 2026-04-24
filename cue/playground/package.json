@@ -1,0 +1,64 @@
+{
+  "name": "CUEplayground",
+  "version": "0.1.0",
+  "description": "CUE Playground",
+  "author": "",
+  "main": "index.js",
+  "dependencies": {
+    "@uiw/codemirror-extensions-langs": "4.22.2",
+    "@uiw/codemirror-theme-vscode": "4.22.2",
+    "@uiw/react-codemirror": "4.22.2",
+    "fuse.js": "7.0.0",
+    "lodash.clonedeep": "4.5.0",
+    "lodash.debounce": "4.0.8",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "4.5.9",
+    "@types/lodash.debounce": "4.0.9",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "classnames": "2.5.1",
+    "copy-webpack-plugin": "12.0.2",
+    "css-loader": "7.1.2",
+    "file-loader": "6.2.0",
+    "html-webpack-plugin": "5.6.0",
+    "sass": " 1.77.2",
+    "sass-loader": " 14.2.1",
+    "style-loader": "4.0.0",
+    "terser-webpack-plugin": "5.3.10",
+    "ts-loader": "9.5.1",
+    "tsconfig-paths-webpack-plugin": "4.1.0",
+    "typescript": "4.9.5",
+    "typescript-formatter": "7.2.2",
+    "webpack": "5.105.1",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "5.2.3"
+  },
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "build:hugo": "npm run build && npm run copy",
+    "copy": "mkdir -p ../hugo/static/playground && cp _dist/bundle.min.js ../hugo/static/playground/ && cp _dist/main.css ../hugo/static/playground/ && cp _dist/main.wasm ../hugo/static/playground/ "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuelang/website.git"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

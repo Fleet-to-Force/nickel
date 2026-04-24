@@ -1,0 +1,382 @@
+# Ensure that preprocessor understands how to handle multi-stage scripts.
+# This includes formatting an upload node, running a script node, and
+# skipping formatting a file in another upload node.
+
+unquote content/dir/en.md golden/content/dir/en.md.writeBack
+
+# Run the preprocessor
+exec preprocessor execute --debug=all
+
+cmp content/dir/gen_cache.cue golden/content/dir/gen_cache.cue
+
+# Copy the resulting soure file sideways and use that in comparison
+# so that we don't inadvertently update it when using CUE_UPDATE=1
+cp content/dir/en.md content/dir/en.md.writeBack
+
+# Verify that the source file is intact
+cmp content/dir/en.md.writeBack golden/content/dir/en.md.writeBack
+
+# Verify that the target files match the source contents
+cmp hugo/content/en/dir/index.md golden/hugo/content/en/dir/index.md
+
+# Re-run the preprocessor and ensure we have a cache hit
+exec preprocessor execute --debug=all
+stderr $WORK${/}'content'${/}'dir'${/}'en.md: cache hit for multi-step script; not running'
+
+# Re-run the preprocessor again with --skipcache to ensure we re-run a cache hit
+exec preprocessor execute --debug=all --skipcache
+stderr $WORK${/}'content'${/}'dir'${/}'en.md: skipping cache for multi-step script; was a hit'
+
+-- hugo/.keep --
+-- site.cue --
+package site
+
+import "strings"
+
+// TODO: we should inject the following as a policy
+versions: cue: [x=string]: var: "CUELANG_CUE_\(strings.ToUpper(x))"
+
+versions: cue: default: v: "v0.9.0-alpha.3"
+-- content/dir/page.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+
+	sanitisers: [
+		{
+			kind:          "patternSanitiser"
+			commandPrefix: "cue eval"
+			pattern: expr: "member1"
+			replacement: "member3"
+		},
+		{
+			kind:    "patternSanitiser"
+			command: "cue version"
+			pattern: expr: #"(?m)GOARCH .+$"#
+			replacement: "GOARCH amd64"
+		},
+		{
+			kind:    "patternSanitiser"
+			command: "cue version"
+			pattern: expr: #"(?m)GOOS .+$"#
+			replacement: "GOOS linux"
+		},
+		{
+			kind:    "patternSanitiser"
+			command: "cue version"
+			pattern: expr: #"(?m)^\s*GOAMD64 .*\n"#
+			replacement: ""
+		},
+		{
+			kind:    "patternSanitiser"
+			command: "cue version"
+			pattern: expr: #"(?m)^\s*GOARM64 .*\n"#
+			replacement: ""
+		},
+	]
+}
+-- content/dir/_something/nested/file.txt --
+Hello!
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>{{{with step}}}
+>
+>{{{uploaddir "_something"}}}
+>
+>{{{with _script_ "en" "hidden script"}}}
+>cat nested/file.txt
+>echo hello
+>{{{end}}}
+>
+>{{{with _upload_ "en" "hidden file"}}}
+>-- hidden.txt --
+>Secret message
+>{{{end}}}
+>
+>{{{with upload "en" "upload-some-cue"}}}
+>#codetab(in.cue) linenos="table"
+>#nofmt(in.json)
+>#location top-left top-right
+>-- in.cue --
+>// A doc comment
+>map: {
+>member1: 3 // a line comment
+>member2: 4
+>}
+>-- in.json --
+>{
+>"x": 5
+>}
+>{{{end}}}
+>{{{with script "end" "verify upload length"}}}
+>wc -l in.json
+>{{{end}}}
+>{{{with upload "en" "in-subdir"}}}
+>-- in/sub/dir/in.json --
+>{
+>"x":    5
+>}
+>{{{end}}}
+>{{{with script "en" "run-the-cue"}}}
+># script doc comment
+>#scripttag
+># script doc comment part 2
+>cue eval in.cue # test
+>
+># another statement with doc comment
+># which is across two lines
+>echo hello
+>{{{end}}}
+>{{{with script "en" "cue version"}}}
+>export MYVAR=value
+>cue version
+>{{{end}}}
+>{{{with script "en" "norun"}}}
+>#norun for reasons
+>nonexistent command
+>{{{end}}}
+>{{{end}}}
+>
+>{{{with script "en" "subst env var"}}}
+>echo $CUELANG_CUE_DEFAULT
+>{{{end}}}
+-- golden/content/dir/en.md.writeBack --
+>---
+>title: JSON Superset
+>---
+>{{{with step}}}
+>
+>{{{uploaddir "_something"}}}
+>
+>{{{with _script_ "en" "hidden script"}}}
+>cat nested/file.txt
+>echo hello
+>{{{end}}}
+>
+>{{{with _upload_ "en" "hidden file"}}}
+>-- hidden.txt --
+>Secret message
+>{{{end}}}
+>
+>{{{with upload "en" "upload-some-cue"}}}
+>#codetab(in.cue) linenos="table"
+>#nofmt(in.json)
+>#location top-left top-right
+>-- in.cue --
+>// A doc comment
+>map: {
+>	member1: 3 // a line comment
+>	member2: 4
+>}
+>-- in.json --
+>{
+>"x": 5
+>}
+>{{{end}}}
+>{{{with script "end" "verify upload length"}}}
+>wc -l in.json
+>{{{end}}}
+>{{{with upload "en" "in-subdir"}}}
+>-- in/sub/dir/in.json --
+>{
+>    "x": 5
+>}
+>{{{end}}}
+>{{{with script "en" "run-the-cue"}}}
+># script doc comment
+>#scripttag
+># script doc comment part 2
+>cue eval in.cue # test
+>
+># another statement with doc comment
+># which is across two lines
+>echo hello
+>{{{end}}}
+>{{{with script "en" "cue version"}}}
+>export MYVAR=value
+>cue version
+>{{{end}}}
+>{{{with script "en" "norun"}}}
+>#norun for reasons
+>nonexistent command
+>{{{end}}}
+>{{{end}}}
+>
+>{{{with script "en" "subst env var"}}}
+>echo $CUELANG_CUE_DEFAULT
+>{{{end}}}
+-- golden/hugo/content/en/dir/index.md --
+---
+title: JSON Superset
+---
+{{< step stepNumber="1" >}}
+
+{{< code-tabs >}}
+{{< code-tab name="in.cue" language="cue" area="top-left" linenos="table" >}}
+// A doc comment
+map: {
+	member1: 3 // a line comment
+	member2: 4
+}
+{{< /code-tab >}}{{< code-tab name="in.json" language="json" area="top-right" >}}
+{
+"x": 5
+}
+{{< /code-tab >}}{{< /code-tabs >}}
+````text { title="TERMINAL" type="terminal" codeToCopy="d2MgLWwgaW4uanNvbg==" }
+$ wc -l in.json
+3 in.json
+````
+{{< code-tabs >}}
+{{< code-tab name="in/sub/dir/in.json" language="json" area="top-left" >}}
+{
+    "x": 5
+}
+{{< /code-tab >}}{{< /code-tabs >}}
+````text { title="TERMINAL" type="terminal" codeToCopy="Y3VlIGV2YWwgaW4uY3VlICMgdGVzdAplY2hvIGhlbGxv" }
+# script doc comment
+# script doc comment part 2
+$ cue eval in.cue # test
+map: {
+    member3: 3
+    member2: 4
+}
+
+# another statement with doc comment
+# which is across two lines
+$ echo hello
+hello
+````
+````text { title="TERMINAL" type="terminal" codeToCopy="ZXhwb3J0IE1ZVkFSPXZhbHVlCmN1ZSB2ZXJzaW9u" }
+$ export MYVAR=value
+$ cue version
+cue version v0.16.1
+
+CUE language version v0.16.1
+
+Go version go1.26.2
+      -buildmode exe
+       -compiler gc
+       -trimpath true
+  DefaultGODEBUG cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0
+     CGO_ENABLED 0
+          GOARCH amd64
+            GOOS linux
+````
+````text { title="TERMINAL" type="terminal" codeToCopy="bm9uZXhpc3RlbnQgY29tbWFuZA==" }
+$ nonexistent command
+````
+{{< /step >}}
+
+````text { title="TERMINAL" type="terminal" codeToCopy="ZWNobyB2MC45LjAtYWxwaGEuMw==" }
+$ echo v0.9.0-alpha.3
+v0.9.0-alpha.3
+````
+-- golden/content/dir/gen_cache.cue --
+package site
+{
+	content: {
+		dir: {
+			page: {
+				cache: {
+					upload: {
+						"hidden file":     "Hll2hQUrqDxhL0DTRP23B7DGRTZqO7Gbvv19Ueq3wzU="
+						"upload-some-cue": "JzgXH73iAq/xc9iBpcbCq06dvihVi8WfvS/fztJ44RQ="
+						"in-subdir":       "R9NVehyQ0pqzfDCIism62rIKBh/qaH42AHL642Xgg0Y="
+					}
+					multi_step: {
+						hash:       "MUGEE8GV90QRO98C5VJ1FDSSKOGOA9A3EPVTBSFM27PISULSJM4G===="
+						scriptHash: "4R7CKCD6U3F6M7HMDOORM6L5LARG5T2HN3S7TGFFUFAJ61CAS8LG===="
+						steps: [{
+							doc:      ""
+							cmd:      "cat nested/file.txt"
+							exitCode: 0
+							output: """
+									Hello!
+
+									"""
+						}, {
+							doc:      ""
+							cmd:      "echo hello"
+							exitCode: 0
+							output: """
+									hello
+
+									"""
+						}, {
+							doc:      ""
+							cmd:      "wc -l in.json"
+							exitCode: 0
+							output: """
+									3 in.json
+
+									"""
+						}, {
+							doc: """
+									# script doc comment
+									#scripttag
+									# script doc comment part 2
+									"""
+							cmd:      "cue eval in.cue # test"
+							exitCode: 0
+							output: """
+									map: {
+									    member3: 3
+									    member2: 4
+									}
+
+									"""
+						}, {
+							doc: """
+									# another statement with doc comment
+									# which is across two lines
+									"""
+							cmd:      "echo hello"
+							exitCode: 0
+							output: """
+									hello
+
+									"""
+						}, {
+							doc:      ""
+							cmd:      "export MYVAR=value"
+							exitCode: 0
+							output:   ""
+						}, {
+							doc:      ""
+							cmd:      "cue version"
+							exitCode: 0
+							output: """
+									cue version v0.16.1
+
+									CUE language version v0.16.1
+
+									Go version go1.26.2
+									      -buildmode exe
+									       -compiler gc
+									       -trimpath true
+									  DefaultGODEBUG cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0
+									     CGO_ENABLED 0
+									          GOARCH amd64
+									            GOOS linux
+
+									"""
+						}, {
+							doc:      ""
+							cmd:      "echo v0.9.0-alpha.3"
+							exitCode: 0
+							output: """
+									v0.9.0-alpha.3
+
+									"""
+						}]
+					}
+				}
+			}
+		}
+	}
+}

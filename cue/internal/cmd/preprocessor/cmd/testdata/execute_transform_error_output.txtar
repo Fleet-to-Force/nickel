@@ -1,0 +1,70 @@
+# Ensure that preprocessor understands the concept of error output
+# in shorthand code
+
+unquote content/dir/en.md
+
+# Make a golden file of the input to ensure it is written back intact
+cp content/dir/en.md golden/content/dir/en.md
+
+# Run the preprocessor
+exec preprocessor execute --debug=all
+
+# Copy the resulting soure file sideways and use that in comparison
+# so that we don't inadvertently update it when using CUE_UPDATE=1
+cp content/dir/en.md content/dir/en.md.writeBack
+
+# Verify that the source file is intact
+cmp content/dir/en.md.writeBack golden/content/dir/en.md
+
+# Verify that the target files matche the source contents
+cmp hugo/content/en/dir/index.md golden/hugo/content/en/dir/index.md
+
+-- hugo/.keep --
+-- golden/content/dir/.keep --
+-- content/dir/site.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>Some text before
+>
+>{{{with code "en" "json-superset"}}}
+>-- in.cue --
+>e: =~"foo"
+>e: "bar"
+>-- out.err --
+>e: invalid value "bar" (out of bound =~"foo"):
+>    ./in.cue:1:4
+>    ./in.cue:2:4
+>{{{end}}}
+>
+>Some text after
+>
+-- golden/hugo/content/en/dir/index.md --
+---
+title: JSON Superset
+---
+
+Some text before
+
+{{< code-tabs >}}
+{{< code-tab name="CUE" language="cue" area="top-left" >}}
+e: =~"foo"
+e: "bar"
+{{< /code-tab >}}
+{{< code-tab name="ERR" language="err" area="top-right" type="terminal" >}}
+e: invalid value "bar" (out of bound =~"foo"):
+    ./in.cue:1:4
+    ./in.cue:2:4
+{{< /code-tab >}}
+{{< /code-tabs >}}
+
+Some text after
+

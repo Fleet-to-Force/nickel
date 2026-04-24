@@ -1,0 +1,62 @@
+@import '../config/colors';
+@import '../mixins/marginless-child';
+@import '../mixins/screen';
+@import '../mixins/svg';
+
+.note {
+    $self: &;
+
+    --heading-color: #{ $c-white };
+    --list-color: #{ $c-white };
+    --text-color: #{ $c-white };
+    --text-link-color: #{ $c-white };
+
+    background-color: var(--note-bg-color, $c-blue--light);
+    border-radius: 3px;
+    color: var(--text-color);
+    margin: 0 0 1.25em;
+    padding: 1rem 1.25rem;
+
+    &__icon {
+        display: none;
+    }
+
+    &__content {
+        @include marginless-child;
+
+        position: relative;
+
+        code {
+            background-color: var(--note-code-bg-color, $c-grey-blue);
+            border-radius: 2px;
+            color: $c-grey--darkest;
+            padding: 0 4px;
+        }
+    }
+
+    &--warn {
+        --heading-color: #{ $c-blue--darker };
+        --list-color: #{ $c-blue--darker };
+        --note-bg-color: #{ $c-yellow };
+        --note-code-bg-color: #{ $c-yellow--light };
+        --text-color: #{ $c-blue--darker };
+        --text-link-color: #{ $c-blue--darker };
+    }
+
+    &--caution {
+        --note-bg-color: #{ $c-red--light };
+        --note-code-bg-color: #{ $c-red--lighter };
+    }
+
+    @include screen($screen-simple) {
+        display: flex;
+        gap: 1rem;
+
+        &__icon {
+            display: block;
+            flex: 0 0 2rem;
+            height: 2rem;
+            width: 2rem;
+        }
+    }
+}

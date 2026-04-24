@@ -1,0 +1,178 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../config/typography';
+@import '../mixins/list-reset';
+@import '../mixins/svg';
+
+.tree {
+    $self: &;
+
+    line-height: 1.75;
+    margin: 0 0 1rem;
+    overflow: auto;
+    padding: 0.7rem 0 0.5rem 1rem;
+
+    &__list {
+        @include list-reset;
+
+        &.is-page {
+            margin: 0;
+        }
+    }
+
+    &__item {
+        display: block;
+        min-height: 2rem;
+        position: relative;
+    }
+
+    &__link {
+        color: $c-blue--darker;
+        display: block;
+        text-decoration: none;
+
+        &[disabled] {
+            color: $c-grey;
+            cursor: default;
+            pointer-events: none;
+
+            #{ $self }__text {
+                background-size: 0 0;
+            }
+        }
+
+        &:hover,
+        &:focus {
+            #{ $self }__text {
+                background-position-x: 0;
+                background-size: 100% 2px;
+            }
+        }
+    }
+
+    &__text {
+        background: linear-gradient(
+        var(--tree-chapter-background, $c-yellow),
+        var(--tree-chapter-background, $c-yellow)
+    ) no-repeat 100% 100%;
+        background-size: 0 2px;
+        display: inline;
+        font-size: 1rem;
+        font-weight: $weight-medium;
+        transition: background-color 0.2s ease-in-out, background-size 0.2s ease-in-out;
+    }
+
+    .is-book {
+        & > #{ $self }__list {
+            margin: 0.5rem 0;
+        }
+
+        & > #{ $self }__item {
+            padding: 0.7rem 2rem;
+
+            & > .toc {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+
+            & > #{ $self }__link {
+                #{ $self }__text {
+                    font-size: 1.25rem;
+                    font-weight: $weight-bold;
+                }
+            }
+
+            &.is-active,
+            &.is-active-path {
+                background: $c-grey--light-mid;
+                border-radius: $b-radius 0 0 $b-radius;
+                box-shadow: 4px 4px 10px 0 transparentize($c-black, 0.98) inset;
+                padding-bottom: 1.5rem;
+                padding-top: 1rem;
+            }
+
+        }
+    }
+
+    .is-chapter,
+    .is-page {
+        line-height: 1.25;
+
+        #{ $self }__item {
+            margin-top: 0;
+
+            &.is-active {
+                &::before {
+                    background-color: var(--tree-chapter-background-active, $c-yellow);
+                    content: '';
+                    height: 3px;
+                    left: -1.25rem;
+                    position: absolute;
+                    top: calc(0.25rem + 0.6em);
+                    width: 12px;
+                }
+            }
+
+            #{ $self }__link {
+                padding: 0.25rem 0;
+
+                &:hover,
+                &:focus {
+                    #{ $self }__text {
+                        color: $c-blue--light;
+                    }
+                }
+            }
+        }
+    }
+
+    .is-chapter {
+        margin: 10px 0 0;
+
+        & > #{ $self }__item {
+            & > .toc {
+                margin-left: 0;
+                margin-top: 0;
+            }
+
+            &.has-children {
+                margin-bottom: 1rem;
+            }
+        }
+    }
+
+    .is-page {
+        #{ $self }__item {
+            min-height: 1.25rem;
+
+            #{ $self }__link {
+                color: transparentize($c-blue--darker, 0.2);
+                padding: 0.25rem 0 0.25rem 1.5rem;
+
+                &::before {
+                    @include svg(page, $c-blue--darker);
+
+                    height: 1rem;
+                    left: 0;
+                    opacity: 0.3;
+                    position: absolute;
+                    top: 7px;
+                    width: 1rem;
+                }
+
+                &:focus,
+                &:hover {
+                    &::before {
+                        @include svg(page, $c-blue--light);
+
+                        opacity: 1;
+                    }
+                }
+            }
+
+            #{ $self }__text {
+                font-size: 0.875rem;
+            }
+        }
+    }
+}

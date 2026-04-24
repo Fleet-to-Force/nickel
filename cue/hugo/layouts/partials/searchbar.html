@@ -1,0 +1,12 @@
+{{ $action := .action | default .RelPermalink }}
+{{ $inputId := .id | default "searchbar"}}
+{{ $modifier := .modifier | default "" }}
+{{ $type := .type | default "" }}
+{{ $placeholder := .placeholder | default "" }}
+
+<div data-search-autocomplete="{{ $type }}"
+     data-searchbar-size="{{ if not (eq $type "results") }}small{{ end }}"
+     data-searchbar-placeholder="{{ $placeholder }}"
+>
+    <div id="autocomplete-{{ $type }}"></div>
+</div>

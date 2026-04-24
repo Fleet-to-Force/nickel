@@ -1,0 +1,64 @@
+# Code generated site_tool.cue; DO NOT EDIT.
+
+canonicalUrlPrefix = 'https://cuelang.org/'
+gcs_engine_id = '004591905419617723008:8rmik2a7xb3'
+github_repo = 'https://github.com/cue-lang/cuelang.org'
+images = ['img/social.png']
+logo = 'svg/logo.svg'
+
+[notification]
+content = '**CUE v0.16 is now available** -- learn more about its [new features and improvements](https://github.com/cue-lang/cue/releases/tag/v0.16.0)'
+type = 'cue-minor-release-v0.16'
+
+[notification.button]
+icon = 'download'
+link = '/docs/introduction/installation/'
+text = 'Install CUE'
+
+[[tags]]
+color = 'red'
+name = 'ecosystem'
+
+[[tags]]
+color = 'green'
+name = 'encodings'
+
+[[tags]]
+color = 'purple'
+name = 'cue command'
+
+[[tags]]
+color = 'blue'
+name = 'language'
+
+[[tags]]
+color = 'lilac'
+name = 'validation'
+
+[[tags]]
+color = 'orange'
+name = 'tooling'
+
+[[tags]]
+color = 'pink'
+name = 'commented cue'
+
+[[tags]]
+color = 'red'
+name = 'user question'
+
+[[tags]]
+color = 'red'
+name = 'modules'
+
+[[tags]]
+color = 'lavender'
+name = 'go api'
+
+[[tags]]
+color = 'blue'
+name = 'java api'
+
+[[tags]]
+color = 'blue'
+name = 'workflow command'

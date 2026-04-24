@@ -1,0 +1,97 @@
+# Ensure that preprocessor understands the shorthand in-out archive
+
+unquote content/dir/en.md
+unquote golden/content/dir/en.md
+
+# Run the preprocessor
+exec preprocessor execute --debug=all --update
+
+# Copy the resulting soure file sideways and use that in comparison
+# so that we don't inadvertently update it when using CUE_UPDATE=1
+cp content/dir/en.md content/dir/en.md.writeBack
+
+# Verify that the source file is intact
+cmp content/dir/en.md.writeBack golden/content/dir/en.md
+
+# Verify that the target files matche the source contents
+cmp hugo/content/en/dir/index.md golden/hugo/content/en/dir/index.md
+
+-- hugo/.keep --
+-- content/dir/site.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+}
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>Some text before
+>
+>{{{with code "en" "json-superset"}}}
+>-- in.cue --
+>// A doc comment
+>map: {
+>	member1: 3 // a line comment
+>	member2: 4
+>}
+>-- out.json --
+>{{{end}}}
+>
+>Some text after
+>
+-- golden/content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>Some text before
+>
+>{{{with code "en" "json-superset"}}}
+>-- in.cue --
+>// A doc comment
+>map: {
+>	member1: 3 // a line comment
+>	member2: 4
+>}
+>-- out.json --
+>{
+>    "map": {
+>        "member1": 3,
+>        "member2": 4
+>    }
+>}
+>{{{end}}}
+>
+>Some text after
+>
+-- golden/hugo/content/en/dir/index.md --
+---
+title: JSON Superset
+---
+
+Some text before
+
+{{< code-tabs >}}
+{{< code-tab name="CUE" language="cue" area="top-left" >}}
+// A doc comment
+map: {
+	member1: 3 // a line comment
+	member2: 4
+}
+{{< /code-tab >}}
+{{< code-tab name="JSON" language="json" area="top-right" type="terminal" >}}
+{
+    "map": {
+        "member1": 3,
+        "member2": 4
+    }
+}
+{{< /code-tab >}}
+{{< /code-tabs >}}
+
+Some text after
+

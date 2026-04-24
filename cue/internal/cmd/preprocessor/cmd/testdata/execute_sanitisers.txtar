@@ -1,0 +1,81 @@
+# Ensure that various shell scripts can be handled by the sanitiser checker.
+
+unquote content/dir/en.md
+
+# Run the preprocessor
+exec preprocessor execute
+
+# Verify that the target files matche the source contents
+cmp hugo/content/en/dir/index.md golden/hugo/content/en/dir/index.md
+
+-- hugo/.keep --
+-- content/dir/site.cue --
+package site
+
+content: dir: page: {
+	leftDelim:  "{{{"
+	rightDelim: "}}}"
+
+	sanitisers: [
+		// Need at least one sanitiser
+		{
+			kind: "ellipsisSanitiser"
+			command: "ls"
+		},
+		{
+			kind: "patternSanitiser"
+			commandPrefix: "! diff"
+			pattern: expr: #"(?m)^((?:---|\+\+\+)\s+\S+\s+)(.+)$"#
+			replacement: "$1"
+		},
+	]
+}
+-- content/dir/en.md --
+>---
+>title: JSON Superset
+>---
+>
+>{{{with upload "en" "a"}}}
+>-- a --
+>content in a
+>{{{end}}}
+>{{{with upload "en" "b"}}}
+>-- b --
+>content in b
+>{{{end}}}
+>
+>{{{with script "en" "zero"}}}
+>#BinaryCmd (the pipe)
+>ls | echo hello
+>{{{end}}}
+>
+>{{{with script "en" "diff"}}}
+>! diff -wu a b
+>{{{end}}}
+-- golden/hugo/content/en/dir/index.md --
+---
+title: JSON Superset
+---
+
+{{< code-tabs >}}
+{{< code-tab name="a" language="" area="top-left" >}}
+content in a
+{{< /code-tab >}}{{< /code-tabs >}}
+{{< code-tabs >}}
+{{< code-tab name="b" language="" area="top-left" >}}
+content in b
+{{< /code-tab >}}{{< /code-tabs >}}
+
+````text { title="TERMINAL" type="terminal" codeToCopy="bHMgfCBlY2hvIGhlbGxv" }
+$ ls | echo hello
+...
+````
+
+````text { title="TERMINAL" type="terminal" codeToCopy="ZGlmZiAtd3UgYSBi" }
+$ diff -wu a b
+--- a	
++++ b	
+@@ -1 +1 @@
+-content in a
++content in b
+````

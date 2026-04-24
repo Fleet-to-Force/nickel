@@ -1,0 +1,41 @@
+@import '../config/sizes';
+@import '../mixins/screen';
+
+.anchor {
+    $self: &;
+
+    cursor: default;
+    left: -$p-gutter;
+    padding-right: 2rem; // make sure there is overlap between anchor and heading
+    position: absolute;
+    text-decoration: none;
+
+    &:focus-visible {
+        #{ $self }__icon {
+            visibility: visible;
+        }
+    }
+
+    &__icon {
+        display: inline-block;
+        height: 1.25rem;
+        padding: 4px;
+        vertical-align: -2px;
+        visibility: hidden;
+        width: 1.25rem;
+    }
+
+    @include screen($screen-large) {
+        left: -($p-gutter * 1.5);
+
+        &__icon {
+            padding: 2px;
+        }
+    }
+
+    @media (hover: none) {
+        &__icon {
+            visibility: visible !important;
+        }
+    }
+}

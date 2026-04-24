@@ -1,0 +1,53 @@
+# Code generated site_tool.cue; DO NOT EDIT.
+
+baseURL = '/'
+defaultContentLanguage = 'en'
+defaultContentLanguageInSubdir = false
+disableAliases = false
+disableKinds = ['RSS', 'taxonomy', 'term']
+enableGitInfo = true
+enableMissingTranslationPlaceholders = true
+enableRobotsTXT = true
+publishDir = '../_public'
+title = 'CUE'
+
+[build]
+noJSConfigInAssets = true
+
+[imaging]
+anchor = 'smart'
+quality = 75
+resampleFilter = 'CatmullRom'
+
+[mediaTypes]
+[mediaTypes.'notARealMediaType/cue']
+suffixes = ['cue']
+
+[mediaTypes.'text/netlify']
+delimiter = ''
+
+[outputFormats]
+[outputFormats.Algolia]
+baseName = 'algolia'
+isPlainText = true
+mediaType = 'application/json'
+notAlternative = true
+
+[outputFormats.REDIR]
+baseName = '_redirects'
+isPlainText = true
+mediatype = 'text/netlify'
+notAlternative = true
+
+[outputFormats.RSS]
+baseName = 'feed'
+
+[outputFormats.aliases]
+baseName = 'aliases'
+isPlainText = true
+mediaType = 'notARealMediaType/cue'
+notAlternative = true
+
+[outputs]
+home = ['HTML', 'RSS', 'REDIR', 'Algolia', 'aliases']
+section = ['HTML']

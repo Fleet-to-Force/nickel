@@ -1,0 +1,268 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../config/typography';
+@import '../mixins/container';
+@import '../mixins/screen';
+@import '../mixins/sr-only';
+
+.header {
+    $self: &;
+
+    --header-height: #{ $h-header };
+    --header-logo-width: #{ $w-branding };
+
+    background-color: var(--header-background, $c-blue--lighter);
+    display: block;
+    height: var(--header-height);
+    width: 100%;
+
+    // On documentation pages, header is always fixed
+    [data-page-type="docs"] & {
+        position: fixed;
+        z-index: 100;
+    }
+
+    &__container {
+        @include container($w-site);
+
+        align-items: center;
+        display: flex;
+        height: 100%;
+        padding: 0 10px;
+    }
+
+    &__branding {
+        flex: 0 0 var(--header-logo-width);
+        margin: 0 45px 0 0;
+        width: var(--header-logo-width);
+    }
+
+    &__logo {
+        background-color: var(--header-logo-background, $c-white);
+        border-radius: $b-radius--round;
+        display: block;
+        fill: $c-blue;
+        padding: 7px;
+        width: 100%;
+
+        .logo__outer {
+            transition: fill 0.2s ease;
+        }
+
+        &:focus,
+        &:hover {
+            .logo__outer {
+                fill: var(--header-logo-hover, $c-yellow);
+            }
+        }
+
+        span {
+            @include sr-only;
+        }
+    }
+
+    &__main {
+        display: none;
+    }
+
+    &__secondary {
+        display: flex;
+        margin-left: auto;
+    }
+
+    &__icons {
+        display: none;
+    }
+
+    &__cta,
+    &__search {
+        display: none;
+
+        .button {
+            display: block;
+        }
+    }
+
+    &--wide {
+        --header-height: #{ $h-header--sticky };
+    }
+
+    &--wide,
+    &.is-sticky {
+        --header-logo-width: #{ $w-branding--large };
+
+        #{ $self }__container {
+            background-color: var(--header-background-sticky, $c-white);
+            box-shadow: $shadow--header;
+            height: $h-header--sticky;
+            max-width: 100%;
+
+            &>* {
+                z-index: 2;
+            }
+
+            // Background
+            &::before {
+                background-color: var(--header-background-sticky, $c-white);
+                content: '';
+                height: 100%;
+                left: 0;
+                position: absolute;
+                top: 0;
+                width: 100%;
+                z-index: 1;
+            }
+
+            // Logo shadow
+            &::after {
+                border-radius: $b-radius--round;
+                box-shadow: $shadow--header;
+                content: '';
+                height: var(--header-logo-width);
+                left: 35px;
+                position: absolute;
+                top: 10px;
+                width: var(--header-logo-width);
+                z-index: 0; // Get it behind the bg
+            }
+        }
+
+        #{ $self }__branding {
+            flex: 0 0 100px;
+            height: 100%;
+            margin: 0 10px 0 20px;
+            position: relative;
+            width: 100px;
+        }
+
+        #{ $self }__logo {
+            position: absolute;
+            top: 5px;
+        }
+
+        #{ $self }__cta {
+            margin: 0 0.5rem;
+        }
+    }
+
+    &.is-sticky {
+        #{ $self }__container {
+            opacity: 0; // Hides flickering
+            position: fixed;
+            transform: translateY(-110px); // more then height because of logo / box shadow
+            transition: transform 0.2s;
+        }
+    }
+
+    &.is-shown {
+        #{ $self }__container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    // On documentation pages, keep header always visible when sticky
+    [data-page-type="docs"] &.is-sticky {
+        #{ $self }__container {
+            transform: translateY(0);
+            transition: none;
+        }
+    }
+
+    @include screen(550px) {
+        &__cta {
+            display: block;
+            margin: 0 1rem;
+        }
+    }
+
+    @include screen($screen-simple) {
+        --header-height: #{ $h-header--large };
+        --header-logo-width: #{ $w-branding--large };
+
+        #{ $self }__container {
+            padding: 0 $p-gutter;
+        }
+
+        &--wide,
+        &.is-sticky {
+
+            #{ $self }__container {
+                &::after {
+                    left: 40px;
+                }
+            }
+        }
+
+        &--wide {
+            --header-height: #{ $h-header--sticky };
+            --header-logo-width: #{ $w-branding--large };
+        }
+    }
+
+    @include screen($screen-normal) {
+        &__main,
+        &__icons,
+        &__search {
+            display: block;
+        }
+
+        &__search {
+            position: relative;
+        }
+
+        &__toggle {
+            display: none;
+        }
+
+        &__dropdown {
+            background-color: $c-yellow;
+            border-radius: $b-radius;
+            box-shadow: $shadow--blue;
+            display: none;
+            max-width: $w-site * 0.5;
+            opacity: 0;
+            padding: 2rem $p-gutter--large $p-gutter;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            transform: translate(0, (-60px));
+            transform-origin: top;
+            transition: opacity .1s, transform .2s;
+            width: $w-site * 0.5;
+
+            &.is-active {
+                display: block;
+            }
+
+            &.is-open {
+                opacity: 1;
+                transform: translate(0, 0);
+                transition: opacity .1s, transform .2s;
+            }
+        }
+
+        &__search-title {
+            @include style-heading;
+            @include style-heading-3;
+
+            color: var(--heading-color);
+            margin-bottom: 1rem;
+        }
+
+        &--wide {
+            --header-height: #{ $h-header--sticky };
+            --header-logo-width: #{ $w-branding--large };
+        }
+    }
+
+    @include screen($screen-large) {
+        --header-height: #{ $h-header--xlarge };
+        --header-logo-width: #{ $w-branding--xlarge };
+
+        &--wide {
+            --header-height: #{ $h-header--sticky };
+            --header-logo-width: #{ $w-branding--large };
+        }
+    }
+}

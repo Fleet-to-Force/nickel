@@ -1,0 +1,103 @@
+@import '../config/colors';
+@import '../config/sizes';
+@import '../mixins/list-reset';
+@import '../mixins/screen';
+
+.list {
+    $self: &;
+
+    @include list-reset;
+
+    display: grid;
+    gap: $p-gutter;
+
+    &__item {
+        display: block;
+    }
+
+    &--archive {
+        border: 1px solid transparentize($c-blue--darker, 0.88);
+        border-radius: $b-radius;
+        display: block;
+
+        #{ $self }__item {
+            border-bottom: 1px solid transparentize($c-blue--darker, 0.88);
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+    }
+
+    &--overview {
+        gap: 2.5rem;
+    }
+
+    &--tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+
+        #{ $self }__item {
+            border-bottom: 0;
+        }
+    }
+
+    @include screen($screen-simple) {
+        &--overview {
+            grid-template-columns: repeat(2, 1fr);
+
+            #{ $self }__item:first-child {
+                grid-column: span 2;
+            }
+        }
+
+        &--14,
+        &--33 {
+            display: grid;
+            gap: $p-gutter--large;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        &--14 {
+            column-gap: 4rem;
+        }
+    }
+
+    @include screen($screen-normal) {
+        gap: 2rem;
+
+        &--tags {
+            gap: 7px;
+        }
+
+        &--overview {
+            grid-template-columns: repeat(3, 1fr);
+
+            #{ $self }__item:first-child {
+                grid-column: span 3;
+            }
+        }
+
+        &--14 {
+            gap: 4rem;
+            grid-template-columns: repeat(7, 1fr);
+
+            #{ $self }__item {
+                grid-column: span 2;
+                padding: 0;
+
+                &--wide {
+                    &:last-child {
+                        grid-column: span 3;
+                    }
+                }
+            }
+        }
+
+        &--33 {
+            gap: 3rem;
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+}
