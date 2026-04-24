@@ -1,0 +1,47 @@
+name: Merge CUE into Nickel
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/merge-cue-into-nickel.yml
+
+permissions:
+  contents: write
+
+jobs:
+  merge-cue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout nickel
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Stop if cue already exists
+        run: |
+          if [ -e cue ]; then
+            echo "cue/ already exists. Refusing to overwrite."
+            exit 1
+          fi
+
+      - name: Add CUE remote
+        run: |
+          git remote add cue https://github.com/Fleet-to-Force/cuelang.org.git
+          git fetch cue master
+
+      - name: Merge cuelang.org into cue/
+        run: |
+          git subtree add --prefix=cue cue master -m "Merge cuelang.org into nickel under cue/"
+
+      - name: Push merged repository
+        run: |
+          git push origin HEAD:master
