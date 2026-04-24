@@ -1,0 +1,61 @@
+name: Equalize root layout
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/equalize-root-layout.yml
+
+permissions:
+  contents: write
+
+jobs:
+  equalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Restructure root so nickel/ and cue/ are peers
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -d nickel ]; then
+            echo "nickel/ already exists at root; nothing to do."
+            exit 0
+          fi
+
+          mkdir nickel
+
+          shopt -s dotglob nullglob
+          for item in * .*; do
+            case "$item" in
+              .|..|.git|.github|cue|nickel)
+                continue
+                ;;
+            esac
+            mv "$item" nickel/
+          done
+
+      - name: Commit and push restructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Restructure root into nickel/ and cue/"
+          git push origin HEAD:master
